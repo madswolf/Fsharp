@@ -154,7 +154,18 @@ let main argv =
 
     (*
     1. The type of test is bool * int -> int
-    2. test(false, fact(-1)) 
+    2. test(false, fact(-1)) will result in a StackOverflow Exception, because it's strict and a function call is given as an argument.
+    3. if false then fact -1 else 0 will return 0, because the if-statement is false so it never reaches the check of fact -1.
     *)
-    test(false, fact(-1))
+
+    // Exercise 1.16
+
+    let curry f x y = f(x, y)
+
+    let uncurry g (x, y) = g x y
+
+    // Scrabble Assignments
+
+    // Exercise 1.17
+
     0 // return an integer exit code

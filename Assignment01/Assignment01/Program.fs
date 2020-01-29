@@ -4,6 +4,7 @@
 let main argv =
     // Exercise 1.1
     let sqr x = x*x
+
     let result = sqr 5
 
     printfn "Exercise 1.1 \n
@@ -11,6 +12,7 @@ let main argv =
 
     // Exercise 1.2
     let pow x n = System.Math.Pow(x,n)
+
     let result = pow 2.0 2.0
 
     printfn "Exercise 1.2 \n
@@ -18,8 +20,9 @@ let main argv =
 
     // Exercise 1.3
     let rec sum = function
-    | 1 -> 1
-    | x -> x + sum(x-1)
+        | 1 -> 1
+        | x -> x + sum(x-1)
+
     let result = sum 3
 
     printfn "Exercise 1.3 \n
@@ -27,9 +30,10 @@ let main argv =
 
     // Exercise 1.4
     let rec fib = function
-    | 0 -> 0
-    | 1 -> 1
-    | x -> fib(x-1) + fib(x-2)
+        | 0 -> 0
+        | 1 -> 1
+        | x -> fib(x-1) + fib(x-2)
+
     let result = fib 4
 
     printfn "Exercise 1.4 \n
@@ -37,8 +41,9 @@ let main argv =
 
     // Exercise 1.5
     let rec sum2 = function
-    | m, 0 -> m
-    | m, n -> m + n + sum2(m, n-1)
+        | m, 0 -> m
+        | m, n -> m + n + sum2(m, n-1)
+
     let result = sum2 (3, 3)
     
     printfn "Exercise 1.5 \n
@@ -46,12 +51,12 @@ let main argv =
 
     // Exercise 1.6
     let rec fact = function
-    | 0 -> 1
-    | n -> n * fact(n-1)
+        | 0 -> 1
+        | n -> n * fact(n-1)
 
     let rec power = function
-    | (x,0) -> 1.0
-    | (x,n) -> x * power(x,n-1)
+        | (x,0) -> 1.0
+        | (x,n) -> x * power(x,n-1)
     (*
     - (System.Math.PI, fact -1) raises a Stack Overflow Exception, since it tries to take the factorial value of a negative number
        but is presumably still of type int.
@@ -83,6 +88,7 @@ let main argv =
 
     // Exercise 1.8
     let dup s = s + s
+
     let result = dup "hi "
 
     printfn "Exercise 1.8 \n
@@ -90,9 +96,10 @@ let main argv =
 
     // Exercise 1.9
     let rec dupn = function
-    | s, 0 -> ""
-    | s, 1 -> s + s
-    | s, n -> dupn (s, n-1) + s
+        | s, 0 -> ""
+        | s, 1 -> s + s
+        | s, n -> dupn (s, n-1) + s
+
     let result = dupn ("hi ", 3)
 
     printfn "Exercise 1.9 \n
@@ -113,6 +120,7 @@ let main argv =
 
     // Exercise 1.11
     let minutes t = timediff (00, 00) t
+
     let result1 = minutes (14, 24)
     let result2 = minutes (23, 1)
     
@@ -122,8 +130,9 @@ let main argv =
 
     // Exercise 1.12
     let rec bin = function
-    | n, k when n = k or k = 0 -> 1
-    | n, k when n > k -> bin (n-1, k-1) + bin (n-1, k)
+        | n, k when n = k or k = 0 -> 1
+        | n, k when n > k -> bin (n-1, k-1) + bin (n-1, k)
+
     let result1 = bin (2, 1)
     let result2 = bin (4, 2)
     let result3 = bin (4, 4)
@@ -136,8 +145,8 @@ let main argv =
 
     // Exercise 1.13
     let rec f = function
-    | (0,y) -> y
-    | (x,y) -> f(x-1, x*y)
+        | (0,y) -> y
+        | (x,y) -> f(x-1, x*y)
 
     (*
     1. f is of type int * int -> int
@@ -171,11 +180,7 @@ let main argv =
 
     let isVowel c =
         match System.Char.ToLower c with
-        | 'a' -> true
-        | 'e' -> true
-        | 'i' -> true
-        | 'o' -> true
-        | 'u' -> true
+        | 'a' | 'e' | 'i' | 'o' | 'u' -> true
         | _ -> false
 
     let result1 = isVowel 'I'

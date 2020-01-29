@@ -90,6 +90,7 @@ let main argv =
 
     // Exercise 1.9
     let rec dupn = function
+    | s, 0 -> ""
     | s, 1 -> s + s
     | s, n -> dupn (s, n-1) + s
     let result = dupn ("hi ", 3)
@@ -167,5 +168,42 @@ let main argv =
     // Scrabble Assignments
 
     // Exercise 1.17
+
+    let isVowel c =
+        match System.Char.ToLower c with
+        | 'a' -> true
+        | 'e' -> true
+        | 'i' -> true
+        | 'o' -> true
+        | 'u' -> true
+        | _ -> false
+
+    let result1 = isVowel 'I'
+    let result2 = isVowel 'i'
+    let result3 = isVowel 'Q'
+
+    printfn "Exercise 1.17 \n
+    Given I returns %b \n
+    Given i returns %b \n
+    Given Q returns %b \n" result1 result2 result3
+
+    // Exercise 1.18
+
+    let isConsonant c = 
+        if System.Char.IsLetter c then 
+            if isVowel c then false else true
+        else false
+
+    let result1 = isConsonant 'I'
+    let result2 = isConsonant 'i'
+    let result3 = isConsonant 'Q'
+
+    printfn "Exercise 1.18 \n
+    Given I returns %b \n
+    Given i returns %b \n
+    Given Q returns %b \n" result1 result2 result3
+
+    // Exercise 1.19
+
 
     0 // return an integer exit code

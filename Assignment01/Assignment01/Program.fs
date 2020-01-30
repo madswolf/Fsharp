@@ -243,15 +243,13 @@ let main argv =
 
     // Exercise 1.21
 
-    let hello (index:int) =
-        (
-            empty('0', 0)
-            |> add 0 ('H', 4)
-            |> add 1 ('E', 1)
-            |> add 2 ('L', 1)
-            |> add 3 ('L', 1)
-            |> add 4 ('O', 2)
-        ) index
+    let hello =
+        empty('0', 0)
+        |> add 0 ('H', 4)
+        |> add 1 ('E', 1)
+        |> add 2 ('L', 1)
+        |> add 3 ('L', 1)
+        |> add 4 ('O', 2)
     
     let result1 = hello 0
     let result2 = hello 1

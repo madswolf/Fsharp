@@ -266,27 +266,30 @@ let main argv =
 
     // Assignment 1.22
 
-    printfn "Exercise 1.22 \n"
-
     let singleLetterScore (word:(int -> Char * int)) (pos:int) =
         let v = word pos
         let char, points = v
-        printfn "   Given hello 4, singleLetterScore returns %i \n" points
+        points        
         
     let doubleLetterScore (word:(int -> Char * int)) (pos:int) =
         let v = word pos
         let char, points = v
         let doubledPoints = points * 2
-        printfn "   Given hello 4, doubleLetterScore returns %i \n" doubledPoints
+        doubledPoints
 
     let tripleLetterScore (word:(int -> Char * int)) (pos:int) =
         let v = word pos
         let char, points = v
         let tripledPoints = points * 3
-        printfn "   Given hello 4, tripleLetterScore returns %i \n" tripledPoints
+        tripledPoints
 
-    singleLetterScore hello 4
-    doubleLetterScore hello 4
-    tripleLetterScore hello 4
+    let result1 = singleLetterScore hello 4
+    let result2 = doubleLetterScore hello 4
+    let result3 = tripleLetterScore hello 4
+
+    printfn "Exercise 1.22 \n
+    Given hello 4, singleLetterScore returns %i \n
+    Given hello 4, doubleLetterScore returns %i \n
+    Given hello 4, tripleLetterScore returns %i \n" result1 result2 result3
 
     0 // return an integer exit code

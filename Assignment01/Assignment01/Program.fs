@@ -176,7 +176,7 @@ let main argv =
 
     // Scrabble Assignments
 
-    // Exercise 1.17
+    // Assignment 1.17
 
     let isVowel c =
         match System.Char.ToLower c with
@@ -192,7 +192,7 @@ let main argv =
     Given i returns %b \n
     Given Q returns %b \n" result1 result2 result3
 
-    // Exercise 1.18
+    // Assignment 1.18
 
     let isConsonant c = 
         if System.Char.IsLetter c then 
@@ -208,7 +208,7 @@ let main argv =
     Given i returns %b \n
     Given Q returns %b \n" result1 result2 result3
 
-    // Exercise 1.19
+    // Assignment 1.19
 
     let empty (c: Char, v: int) =
         fun (x:int) -> (c, v)
@@ -224,7 +224,7 @@ let main argv =
     Given 42 returns %A \n
     Given -762 returns %A \n" result1 result2 result3
 
-    // Exercise 1.20
+    // Assignment 1.20
     
     let add (pos:int) (c:Char, v:int) (word:(int -> Char * int)) = function 
         | x when x = pos -> (c, v)
@@ -241,7 +241,7 @@ let main argv =
     Given 1 returns %A \n
     Given 42 returns %A \n" result1 result2 result3
 
-    // Exercise 1.21
+    // Assignment 1.21
 
     let hello =
         empty('0', 0)
@@ -263,5 +263,31 @@ let main argv =
     Given hello 2 returns %A \n
     Given hello 3 returns %A \n
     Given hello 4 returns %A \n" result1 result2 result3 result4 result5
+
+    // Assignment 1.22
+
+    printfn "Exercise 1.22 \n"
+
+    let singleLetterScore (word:(int -> Char * int)) (pos:int) =
+        let v = word pos
+        let char, points = v
+        points
+        printfn "   Given hello 4, singleLetterScore returns %i \n" points
+        
+    let doubleLetterScore (word:(int -> Char * int)) (pos:int) =
+        let v = word pos
+        let char, points = v
+        let doubledPoints = points * 2
+        printfn "   Given hello 4, doubleLetterScore returns %i \n" doubledPoints
+
+    let tripleLetterScore (word:(int -> Char * int)) (pos:int) =
+        let v = word pos
+        let char, points = v
+        let tripledPoints = points * 3
+        printfn "   Given hello 4, tripleLetterScore returns %i \n" tripledPoints
+
+    singleLetterScore hello 4
+    doubleLetterScore hello 4
+    tripleLetterScore hello 4
 
     0 // return an integer exit code

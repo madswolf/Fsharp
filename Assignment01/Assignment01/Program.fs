@@ -267,21 +267,15 @@ let main argv =
     // Assignment 1.22
 
     let singleLetterScore (word:(int -> Char * int)) (pos:int) =
-        let v = word pos
-        let char, points = v
-        points        
+        snd (word pos) 
+    // We could also have accessed the values in the tuple by writing "let char, points = word pos"
+    // and then returning points, but for the purpose of making it a oneliner we used snd
         
     let doubleLetterScore (word:(int -> Char * int)) (pos:int) =
-        let v = word pos
-        let char, points = v
-        let doubledPoints = points * 2
-        doubledPoints
+        snd (word pos) * 2
 
     let tripleLetterScore (word:(int -> Char * int)) (pos:int) =
-        let v = word pos
-        let char, points = v
-        let tripledPoints = points * 3
-        tripledPoints
+        snd (word pos) * 3
 
     let result1 = singleLetterScore hello 4
     let result2 = doubleLetterScore hello 4

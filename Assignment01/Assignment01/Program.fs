@@ -130,7 +130,7 @@ let main argv =
 
     // Exercise 1.12
     let rec bin = function
-        | n, k when n = k or k = 0 -> 1
+        | n, k when n = k || k = 0 -> 1
         | n, k when n > k -> bin (n-1, k-1) + bin (n-1, k)
 
     let result1 = bin (2, 1)
@@ -210,5 +210,35 @@ let main argv =
 
     // Exercise 1.19
 
+    let empty (c: Char, v: int) =
+        fun (x:int) -> (c, v)
 
+    let theLetterA = empty ('A', 1)
+
+    let result1 = theLetterA 0
+    let result2 = theLetterA 42
+    let result3 = theLetterA -762  
+
+    printfn "Exercise 1.19 \n
+    Given 0 returns %A \n
+    Given 42 returns %A \n
+    Given -762 returns %A \n" result1 result2 result3
+
+    // Exercise 1.20
+    
+    let add (pos:int) (c:Char, v:int) (word:(int -> Char * int)) = function 
+        | x when x = pos -> (c, v)
+        | x -> word x
+
+    let theLettersAB = add 1 ('B', 3) theLetterA
+
+    let result1 = theLettersAB 0
+    let result2 = theLettersAB 1
+    let result3 = theLettersAB 42 
+
+    printfn "Exercise 1.19 \n
+    Given 0 returns %A \n
+    Given 1 returns %A \n
+    Given 42 returns %A \n" result1 result2 result3
+    
     0 // return an integer exit code

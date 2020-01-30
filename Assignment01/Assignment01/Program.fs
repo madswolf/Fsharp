@@ -271,7 +271,6 @@ let main argv =
     let singleLetterScore (word:(int -> Char * int)) (pos:int) =
         let v = word pos
         let char, points = v
-        points
         printfn "   Given hello 4, singleLetterScore returns %i \n" points
         
     let doubleLetterScore (word:(int -> Char * int)) (pos:int) =

@@ -240,5 +240,30 @@ let main argv =
     Given 0 returns %A \n
     Given 1 returns %A \n
     Given 42 returns %A \n" result1 result2 result3
+
+    // Exercise 1.21
+
+    let hello (index:int) =
+        (
+            empty('0', 0)
+            |> add 0 ('H', 4)
+            |> add 1 ('E', 1)
+            |> add 2 ('L', 1)
+            |> add 3 ('L', 1)
+            |> add 4 ('O', 2)
+        ) index
     
+    let result1 = hello 0
+    let result2 = hello 1
+    let result3 = hello 2
+    let result4 = hello 3
+    let result5 = hello 4
+
+    printfn "Exercise 1.21 \n
+    Given hello 0 returns %A \n
+    Given hello 1 returns %A \n
+    Given hello 2 returns %A \n
+    Given hello 3 returns %A \n
+    Given hello 4 returns %A \n" result1 result2 result3 result4 result5
+
     0 // return an integer exit code

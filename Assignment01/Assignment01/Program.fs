@@ -56,18 +56,14 @@ let gvalue = g 3
 
 // f 3 = 4 and g 3 = 9
 
-printfn "Exercise 1.7 \n
-Function f given 3 returns %i \n
-Function g given 3 returns %i \n" fvalue gvalue
-
 // Exercise 1.8
 let dup s = s + s
 
 // Exercise 1.9
-let rec dupn = function
-    | s, 0 -> ""
-    | s, 1 -> s + s
-    | s, n -> dupn (s, n-1) + s
+let rec dupn s n =
+    match n with
+    | 0 -> ""
+    | n -> dupn s (n-1) + s
 
 // Exercise 1.10
 let timediff (t1h, t1m) (t2h, t2m) =
@@ -184,6 +180,11 @@ let main argv =
     
     printfn "Exercise 1.5 \n
     Given 3 and 3, the result is: %i \n" result
+
+    // Test of Exercise 1.7
+    printfn "Exercise 1.7 \n
+    Function f given 3 returns %i \n
+    Function g given 3 returns %i \n" fvalue gvalue
    
     //Test of Exercise 1.8
     let result = dup "hi "
@@ -192,7 +193,8 @@ let main argv =
     Given hi returns %s \n" result
 
     // Test of Exercise 1.9
-    let result = dupn ("hi ", 3)
+    let result = dupn "hi " 3
+    let result2 = dupn "hi " 1
 
     printfn "Exercise 1.9 \n
     Given hi and 3 returns %s \n" result
@@ -290,5 +292,7 @@ let main argv =
     Given hello 4, singleLetterScore returns %i \n
     Given hello 4, doubleLetterScore returns %i \n
     Given hello 4, tripleLetterScore returns %i \n" result1 result2 result3
+
+    printfn "%A" (hello 0)
 
     0 // return an integer exit code

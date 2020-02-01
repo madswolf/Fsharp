@@ -1,62 +1,152 @@
-﻿open System
+open System
+
+// Exercise 1.1
+let sqr x = x*x
+
+
+// Exercise 1.2
+let pow x n = System.Math.Pow(x,n)
+
+// Exercise 1.3
+let rec sum = function
+    | 1 -> 1
+    | x -> x + sum(x-1)
+
+// Exercise 1.4
+let rec fib = function
+    | 0 -> 0
+    | 1 -> 1
+    | x -> fib(x-1) + fib(x-2)
+
+// Exercise 1.5
+let rec sum2 = function
+    | m, 0 -> m
+    | m, n -> m + n + sum2(m, n-1)
+
+
+// Exercise 1.6
+let rec fact = function
+    | 0 -> 1
+    | n -> n * fact(n-1)
+
+// Exercise 1.8
+let dup s = s + s
+
+// Exercise 1.9
+let rec dupn = function
+    | s, 0 -> ""
+    | s, 1 -> s + s
+    | s, n -> dupn (s, n-1) + s
+
+// Exercise 1.10
+let timediff (t1h, t1m) (t2h, t2m) =
+    let t1 = t1h * 60 + t1m
+    let t2 = t2h * 60 + t2m
+    t2-t1
+
+// Exercise 1.11
+let minutes t = timediff (00, 00) t
+
+// Exercise 1.12
+let rec bin = function
+    | n, k when n = k || k = 0 -> 1
+    | n, k when n > k -> bin (n-1, k-1) + bin (n-1, k)
+
+// Exercise 1.13
+let rec f = function
+    | (0,y) -> y
+    | (x,y) -> f(x-1, x*y)
+
+// Exercise 1.15
+let test(c,e) = if c then e else 0
+
+// Exercise 1.16
+
+let curry f x y = f(x, y)
+
+let uncurry g (x, y) = g x y
+
+
+// Scrabble Assignments
+
+// Assignment 1.17
+
+let isVowel c =
+    match System.Char.ToLower c with
+    | 'a' | 'e' | 'i' | 'o' | 'u' -> true
+    | _ -> false
+
+// Assignment 1.18
+
+let isConsonant c = 
+    if System.Char.IsLetter c then 
+        if isVowel c then false else true
+    else false
+
+// Assignment 1.19
+
+let empty (c: char, v: int) =
+    fun (x:int) -> (c, v)
+
+// Assignment 1.20
+
+let add (pos:int) (c:char, v:int) (word:(int -> char * int)) = function 
+    | x when x = pos -> (c, v)
+    | x -> word x
+
+// Assignment 1.22
+
+let singleLetterScore (word:(int -> char * int)) (pos:int) =
+    snd (word pos) 
+// We could also have accessed the values in the tuple by writing "let char, points = word pos"
+// and then returning points, but for the purpose of making it a oneliner we used snd
+    
+let doubleLetterScore (word:(int -> char * int)) (pos:int) =
+    snd (word pos) * 2
+
+let tripleLetterScore (word:(int -> char * int)) (pos:int) =
+    snd (word pos) * 3
+
+
 
 [<EntryPoint>]
 let main argv =
-    // Exercise 1.1
-    let sqr x = x*x
-
+    
+    //Test of Exercise 1.1
     let result = sqr 5
 
     printfn "Exercise 1.1 \n
     Given 5, the result is: %i \n" result
 
-    // Exercise 1.2
-    let pow x n = System.Math.Pow(x,n)
-
+    //Test of Exercise 1.2
     let result = pow 2.0 2.0
 
     printfn "Exercise 1.2 \n
     Given 2 and 2, the result is: %f \n" result
 
-    // Exercise 1.3
-    let rec sum = function
-        | 1 -> 1
-        | x -> x + sum(x-1)
-
+   //Test of Exercise 1.3
     let result = sum 3
 
     printfn "Exercise 1.3 \n
     Given 3, the result is: %i \n" result
 
-    // Exercise 1.4
-    let rec fib = function
-        | 0 -> 0
-        | 1 -> 1
-        | x -> fib(x-1) + fib(x-2)
-
+    //Test of Exercise 1.4
     let result = fib 4
 
     printfn "Exercise 1.4 \n
     Given 4, the result is: %i \n" result
 
-    // Exercise 1.5
-    let rec sum2 = function
-        | m, 0 -> m
-        | m, n -> m + n + sum2(m, n-1)
-
+    //Test of Exercise 1.5
     let result = sum2 (3, 3)
     
     printfn "Exercise 1.5 \n
     Given 3 and 3, the result is: %i \n" result
 
-    // Exercise 1.6
-    let rec fact = function
-        | 0 -> 1
-        | n -> n * fact(n-1)
-
+    //Test of Exercise 1.6
     let rec power = function
         | (x,0) -> 1.0
         | (x,n) -> x * power(x,n-1)
+
     (*
     - (System.Math.PI, fact -1) raises a Stack Overflow Exception, since it tries to take the factorial value of a negative number
        but is presumably still of type int.
@@ -64,6 +154,8 @@ let main argv =
     - power(System.Math.PI, fact 2) is of type float.
     - (power, fact) is of type (float * int -> float) * (int -> int).
     *)
+
+
 
     // Exercise 1.7
     let a = 5
@@ -86,31 +178,20 @@ let main argv =
     Function f given 3 returns %i \n
     Function g given 3 returns %i \n" fvalue gvalue
 
-    // Exercise 1.8
-    let dup s = s + s
-
+   
+    //Test of Exercise 1.8
     let result = dup "hi "
 
     printfn "Exercise 1.8 \n
     Given hi returns %s \n" result
 
-    // Exercise 1.9
-    let rec dupn = function
-        | s, 0 -> ""
-        | s, 1 -> s + s
-        | s, n -> dupn (s, n-1) + s
-
+    // Test of Exercise 1.9
     let result = dupn ("hi ", 3)
 
     printfn "Exercise 1.9 \n
     Given hi and 3 returns %s \n" result
 
-    // Exercise 1.10
-    let timediff (t1h, t1m) (t2h, t2m) =
-        let t1 = t1h * 60 + t1m
-        let t2 = t2h * 60 + t2m
-        t2-t1
-
+    //Test of Exercise 1.10
     let result1 = timediff (12, 34) (11, 35)
     let result2 = timediff (12, 34) (13, 35)
 
@@ -118,9 +199,7 @@ let main argv =
     Given (12, 34) and (11, 35) returns %i \n
     Given (12, 34) and (13, 35) returns %i \n" result1 result2
 
-    // Exercise 1.11
-    let minutes t = timediff (00, 00) t
-
+    //Test of Exercise 1.11
     let result1 = minutes (14, 24)
     let result2 = minutes (23, 1)
     
@@ -128,11 +207,7 @@ let main argv =
     Given (14, 24) returns %i \n
     Given (23, 1) returns %i \n" result1 result2
 
-    // Exercise 1.12
-    let rec bin = function
-        | n, k when n = k || k = 0 -> 1
-        | n, k when n > k -> bin (n-1, k-1) + bin (n-1, k)
-
+    //Test of Exercise 1.12
     let result1 = bin (2, 1)
     let result2 = bin (4, 2)
     let result3 = bin (4, 4)
@@ -144,10 +219,6 @@ let main argv =
     Given (4, 4) returns %i \n" result1 result2 result3
 
     // Exercise 1.13
-    let rec f = function
-        | (0,y) -> y
-        | (x,y) -> f(x-1, x*y)
-
     (*
     1. f is of type int * int -> int
     2. f terminates only if given a non-negative integer as x-value.
@@ -159,30 +230,15 @@ let main argv =
     // Exercise 1.14
     // Where dis???
 
-    // Exercise 1.15
-    let test(c,e) = if c then e else 0
 
+    // Exercise 1.15
     (*
     1. The type of test is bool * int -> int
     2. test(false, fact(-1)) will result in a StackOverflow Exception, because it's strict and a function call is given as an argument.
     3. if false then fact -1 else 0 will return 0, because the if-statement is false so it never reaches the check of fact -1.
     *)
 
-    // Exercise 1.16
-
-    let curry f x y = f(x, y)
-
-    let uncurry g (x, y) = g x y
-
-    // Scrabble Assignments
-
-    // Assignment 1.17
-
-    let isVowel c =
-        match System.Char.ToLower c with
-        | 'a' | 'e' | 'i' | 'o' | 'u' -> true
-        | _ -> false
-
+    //Test of Exercise 1.17
     let result1 = isVowel 'I'
     let result2 = isVowel 'i'
     let result3 = isVowel 'Q'
@@ -192,13 +248,7 @@ let main argv =
     Given i returns %b \n
     Given Q returns %b \n" result1 result2 result3
 
-    // Assignment 1.18
-
-    let isConsonant c = 
-        if System.Char.IsLetter c then 
-            if isVowel c then false else true
-        else false
-
+    //Test of Exercise 1.18
     let result1 = isConsonant 'I'
     let result2 = isConsonant 'i'
     let result3 = isConsonant 'Q'
@@ -208,11 +258,8 @@ let main argv =
     Given i returns %b \n
     Given Q returns %b \n" result1 result2 result3
 
-    // Assignment 1.19
 
-    let empty (c: Char, v: int) =
-        fun (x:int) -> (c, v)
-
+    //Test of Exercise 1.19
     let theLetterA = empty ('A', 1)
 
     let result1 = theLetterA 0
@@ -224,12 +271,8 @@ let main argv =
     Given 42 returns %A \n
     Given -762 returns %A \n" result1 result2 result3
 
-    // Assignment 1.20
-    
-    let add (pos:int) (c:Char, v:int) (word:(int -> Char * int)) = function 
-        | x when x = pos -> (c, v)
-        | x -> word x
 
+    //Test of Exercise 1.20
     let theLettersAB = add 1 ('B', 3) theLetterA
 
     let result1 = theLettersAB 0
@@ -241,8 +284,7 @@ let main argv =
     Given 1 returns %A \n
     Given 42 returns %A \n" result1 result2 result3
 
-    // Assignment 1.21
-
+    //Test of Exercise 1.21
     let hello =
         empty('0', 0)
         |> add 0 ('H', 4)
@@ -264,19 +306,7 @@ let main argv =
     Given hello 3 returns %A \n
     Given hello 4 returns %A \n" result1 result2 result3 result4 result5
 
-    // Assignment 1.22
-
-    let singleLetterScore (word:(int -> Char * int)) (pos:int) =
-        snd (word pos) 
-    // We could also have accessed the values in the tuple by writing "let char, points = word pos"
-    // and then returning points, but for the purpose of making it a oneliner we used snd
-        
-    let doubleLetterScore (word:(int -> Char * int)) (pos:int) =
-        snd (word pos) * 2
-
-    let tripleLetterScore (word:(int -> Char * int)) (pos:int) =
-        snd (word pos) * 3
-
+    //Test of Exercise 1.22
     let result1 = singleLetterScore hello 4
     let result2 = doubleLetterScore hello 4
     let result3 = tripleLetterScore hello 4

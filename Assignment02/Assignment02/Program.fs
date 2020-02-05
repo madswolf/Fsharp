@@ -23,38 +23,58 @@ let rec combinePair xs =
     match xs with
     | x1 :: x2 :: newList -> (x1, x2) :: combinePair newList
     | _ -> []
+// Learn more about F# at http://fsharp.org
 
-// Exercise 2.4
-type complex = Complex of float * float
+open System
 
-let mkComplex x y =
-    Complex(x, y)
+let rec downto1 (n:int) : int list = 
+    if n > 0
+        then n :: downto1(n-1)
+        else []
 
-let complexToPair (c:complex) =
-    let (Complex(a, b)) = c
-    (a, b)
+let rec downto2 (n:int) : int list = match n with
+|n when n > 0 -> n :: downto2(n-1) 
+|_ -> []
+
+let removeOddIdx xs =
+    let indices = [0 .. List.length xs - 1]
+    let listWithIndex = List.zip indices xs 
+    let x,y = List.filter (fun (index, item) ->index % 2 <> 1) listWithIndex |> List.unzip
+    y
+    
+let rec combinePair x  = match x with
+    | x1::x2::xs -> (x1,x2)  :: (combinePair xs)
+    | _ -> []
+    
+type complex = float * float 
+
+let mkComplex x y = complex(x,y)
+
+let complexToPair c = 
+    let x,y = c
+    (x,y)
 
 let (|+|) c1 c2 =
-    let (Complex(a, b)) = c1
-    let (Complex(c, d)) = c2
-    Complex(a + c, b + d)
+    let a,b = c1
+    let c,d = c2
+    complex(a+c,b+d)
 
 let (|*|) c1 c2 =
-    let (Complex(a, b)) = c1
-    let (Complex(c, d)) = c2
-    Complex(a * c - b * d, b * c + a * d)
+    let a,b = c1
+    let c,d = c2
+    complex(a*c - b*d, b*c + a*d)
 
-let (~-.) p =
-    let (Complex(a, b)) = p
-    Complex(-a, -b)
+let (~-.) p = 
+    let a,b = p
+    complex(-a,-b)
 
-let (|-|) c1 c2 =
+let (|-|) c1 c2 = 
     c1 |+| -.c2
 
 let (~%) c =
-    let (Complex(a, b)) = c
-    Complex((a / (a * a + b * b)), (-b / (a * a + b * b)))
-
+    let a,b = c
+    complex((a / (a*a + b*b)), ( -b / (a*a + b*b)))
+        
 let (|/|) c1 c2 =
     c1 |*| %c2
 
@@ -97,10 +117,10 @@ let main argv =
     // Test of Exercise 2.4
     let result1 = mkComplex 1.0 2.0
     let result2 = complexToPair result1
-    let result3 = Complex(2.0, 2.0) |+| Complex(1.0, 1.0)
-    let result4 = Complex(2.0, 2.0) |*| Complex(1.0, 1.0)
-    let result5 = Complex(2.0, 2.0) |-| Complex(1.0, 1.0)
-    let result6 = Complex(2.0, 2.0) |/| Complex(1.0, 1.0)
+    let result3 = complex(2.0, 2.0) |+| complex(1.0, 1.0)
+    let result4 = complex(2.0, 2.0) |*| complex(1.0, 1.0)
+    let result5 = complex(2.0, 2.0) |-| complex(1.0, 1.0)
+    let result6 = complex(2.0, 2.0) |/| complex(1.0, 1.0)
 
     printfn "Exercise 2.2 \n
     Given mkComplex 1.0 2.0 returns %A \n

@@ -1,4 +1,5 @@
-﻿open System
+﻿module Programfs
+open System
 
 // Exercise 2.1
 let rec downto1 (n:int) : int list =
@@ -22,28 +23,6 @@ let removeOddIdx xs =
 let rec combinePair xs =
     match xs with
     | x1 :: x2 :: newList -> (x1, x2) :: combinePair newList
-    | _ -> []
-// Learn more about F# at http://fsharp.org
-
-open System
-
-let rec downto1 (n:int) : int list = 
-    if n > 0
-        then n :: downto1(n-1)
-        else []
-
-let rec downto2 (n:int) : int list = match n with
-|n when n > 0 -> n :: downto2(n-1) 
-|_ -> []
-
-let removeOddIdx xs =
-    let indices = [0 .. List.length xs - 1]
-    let listWithIndex = List.zip indices xs 
-    let x,y = List.filter (fun (index, item) ->index % 2 <> 1) listWithIndex |> List.unzip
-    y
-    
-let rec combinePair x  = match x with
-    | x1::x2::xs -> (x1,x2)  :: (combinePair xs)
     | _ -> []
     
 type complex = float * float 
@@ -78,6 +57,115 @@ let (~%) c =
 let (|/|) c1 c2 =
     c1 |*| %c2
 
+let explode1 (l:string) = 
+    let arr = l.ToCharArray()
+    
+    let list = List.ofArray arr
+    list
+
+let rec explode2 (l:string) =
+    match l with
+    | "" -> [] 
+    | s -> s.[0] :: explode2 (s.Remove (0,1)) 
+
+let implode (arr: char list) = 
+    let thing = List.foldBack (fun c s -> string c + s) arr ""
+    thing
+
+let implodeRev (arr: char list) = 
+    let thing = List.fold (fun s c -> string c + s) "" arr
+    thing
+
+let toUpper s = 
+    explode1 s |> List.map System.Char.ToUpper |> implode
+
+let toUpper2 = explode1 >> List.map System.Char.ToUpper >> implode
+
+let rec ack m = 
+    match m with
+    |0,n -> n+1
+    |m,0 -> ack((m-1,1))
+    |m,n -> ack(m-1,ack(m,n-1))
+
+let time func = 
+    let start = System.DateTime.Now
+    let res = func ()
+    let finish = System.DateTime.Now
+    (res, finish - start)
+
+
+let timeArg1 func a = 
+    let thing = fun () -> func (a)
+    time thing
+
+let rec downto3 f n e =
+    match n with
+    | n when n > 0 -> downto3 f (n-1) (f n e)
+    | n when n <= 0 -> e
+
+let downto3alt (f: int -> 'a -> 'a) n e = 
+    if n > 0 then
+        let range = [1..n]
+        let result = List.foldBack f range e
+        result
+    else
+        e
+
+let fac (n:int) :int = 
+    let thingy = fun x y -> x * y
+    downto3 thingy n 1
+
+let range (g:(int -> 'a)) (n:int) :'a list =
+    downto3 (g >> fun y z -> y :: z) n []
+
+type word = (char * int) list
+
+let hello:word = ('H',4)::('E',1)::('L',1)::('L',1)::[('O',2)];; 
+
+type squareFun = word -> int -> int -> int
+
+let Letterscore (word:word) (pos:int) (multi:int) (accumulator:int)  = snd (word.Item(pos)) * multi  + accumulator
+
+let letterScoreGenerator = fun (n:int) -> (fun (word:word) pos accumulator -> Letterscore word pos n accumulator)
+
+let (singleLetterScore:squareFun) = letterScoreGenerator 1
+let (doubleLetterScore:squareFun) = letterScoreGenerator 2
+let (tripleLetterScore:squareFun) = letterScoreGenerator 3
+
+let (doubleWordScore:squareFun) =
+    fun word pos accumulator -> accumulator * 2
+let (tripleWordScore:squareFun) =
+    fun word pos accumulator -> accumulator * 3
+
+let isVowel c =
+    match System.Char.ToLower c with
+    | 'a' | 'e' | 'i' | 'o' | 'u' -> true
+    | _ -> false
+
+let isConsonant c = 
+    if System.Char.IsLetter c then 
+        if isVowel c then false else true
+    else false
+
+let (oddConsonants:squareFun) = 
+    fun word pos accumulator -> 
+    if ((List.filter (fst >> isConsonant) word).Length % 2 = 1) then -accumulator else accumulator
+
+type square = (int * squareFun) list
+
+let SLS : square = [(0, singleLetterScore)];;
+let DLS : square = [(0, doubleLetterScore)];;
+let TLS : square = [(0, tripleLetterScore)];;
+let DWS : square = SLS @ [(1, doubleWordScore)];;
+let TWS : square = SLS @ [(1, tripleWordScore)];;
+
+let calculatePoints  (squares:square list)  (word:word)=
+    let thing = List.mapi (fun index square ->  List.map (fun (innersquare:int * squareFun) ->  (fst innersquare,snd innersquare word index) ) square) squares|>
+                List.fold (fun a b -> a @ b) [] |>
+                List.sortBy(fun square -> fst square) |>
+                List.map (fun square -> snd square) |>
+                List.fold(fun acumulator square -> square << acumulator) (fun x -> x) 
+    thing 0
 
 [<EntryPoint>]
 let main argv =

@@ -1,21 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\code\\f#\\Fsharp\\Assignment02\\Assignment02\\Assignment02.fsproj": {}
+    "C:\\Users\\anna\\Desktop\\ITU\\4semester\\F#\\Assignments\\Fsharp\\Assignment02\\Assignment02\\Assignment02.fsproj": {}
   },
   "projects": {
-    "C:\\code\\f#\\Fsharp\\Assignment02\\Assignment02\\Assignment02.fsproj": {
+    "C:\\Users\\anna\\Desktop\\ITU\\4semester\\F#\\Assignments\\Fsharp\\Assignment02\\Assignment02\\Assignment02.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\code\\f#\\Fsharp\\Assignment02\\Assignment02\\Assignment02.fsproj",
+        "projectUniqueName": "C:\\Users\\anna\\Desktop\\ITU\\4semester\\F#\\Assignments\\Fsharp\\Assignment02\\Assignment02\\Assignment02.fsproj",
         "projectName": "Assignment02",
-        "projectPath": "C:\\code\\f#\\Fsharp\\Assignment02\\Assignment02\\Assignment02.fsproj",
-        "packagesPath": "C:\\Users\\Mads Wolf Jespersen\\.nuget\\packages\\",
-        "outputPath": "C:\\code\\f#\\Fsharp\\Assignment02\\Assignment02\\obj\\",
+        "projectPath": "C:\\Users\\anna\\Desktop\\ITU\\4semester\\F#\\Assignments\\Fsharp\\Assignment02\\Assignment02\\Assignment02.fsproj",
+        "packagesPath": "C:\\Users\\anna\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\anna\\Desktop\\ITU\\4semester\\F#\\Assignments\\Fsharp\\Assignment02\\Assignment02\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Microsoft\\Xamarin\\NuGet\\",
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Mads Wolf Jespersen\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\anna\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
@@ -53,7 +58,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.101\\RuntimeIdentifierGraph.json"
         }
       }
     }

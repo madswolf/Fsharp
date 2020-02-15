@@ -18,10 +18,8 @@
 
     let rec arithEvalState (exp:aExp) (state:Map<string, int>) : int =
         match exp with
-        |V s when (state.TryFind s).IsSome -> state.[s]
+        |V s -> if (state.TryFind s).IsSome then state.[s] else 0
         |N x -> x
         |Add(x,y) -> (arithEvalState x state) + arithEvalState y state
         |Sub(x,y) -> arithEvalState x state - arithEvalState y state
         |Mul(x,y) -> arithEvalState x state * arithEvalState y state
-        |_ -> 0
-    

@@ -34,7 +34,6 @@
         |Add(x,y) -> arithEval x word state + arithEval y word state
         |Sub(x,y) -> arithEval x word state - arithEval y word state
         |Mul(x,y) -> arithEval x word state * arithEval y word state
-        |_ -> 0
 
     type cExp =
        | C  of char      (* Character value *)

@@ -92,6 +92,36 @@ let rec boolEval (exp:bExp) (word:word) (state:Map<string,int>) : bool =
     |Not exp -> not (boolEval exp word state)
     
 
+type stmnt =   
+| Skip                        (* does nothing *)   
+| Ass of string * aExp        (* variable assignment *)   
+| Seq of stmnt * stmnt        (* sequential composition *)   
+| ITE of bExp * stmnt * stmnt (* if-then-else statement *)       
+| While of bExp * stmnt       (* while statement *)    
+
+let rec evalStmnt (stmnt:stmnt) (word:word) (state:Map<string, int>) : Map<string, int> =
+    match stmnt with
+    |Skip -> state
+    |Ass (x,a) -> state.Add(x,arithEval a word state)
+    |Seq (stm1,stm2) -> evalStmnt stm2 word (evalStmnt stm1 word state)
+    |ITE (guard,stm1,stm2) -> 
+        if (boolEval guard word state) 
+            then evalStmnt stm1 word state 
+            else evalStmnt stm2 word state
+    |While (guard, stm) -> 
+        if (boolEval guard word state)
+            then evalStmnt (While (guard, stm)) word (evalStmnt stm word state)
+            else state
+
+
+type squareFun = word -> int -> int -> int
+
+let stmnt2SquareFun (stm:stmnt)  :squareFun =
+    fun (word:word) (pos:int) (acc:int) -> 
+    let state = evalStmnt stm word (Map.empty.Add("_pos_", pos).Add("_acc_", acc))
+    state.["_result_"] 
+
+
 [<EntryPoint>]
 let main argv =
     printfn "Hello World from F#!"

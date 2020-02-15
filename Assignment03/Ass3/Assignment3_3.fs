@@ -146,8 +146,4 @@
     let TWS = [(1, Ass ("_result_", arithTripleWordScore))] @ SLS
 
     let calculatePoints2 : square2 list -> word -> int = failwith "not implemented"
-    
-    [<EntryPoint>]
-    let main argv =
-        printfn "%A" (arithEval WL hello Map.empty)
-    0
+ 

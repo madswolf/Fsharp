@@ -35,6 +35,8 @@
         |Sub(x,y) -> arithEval x word state - arithEval y word state
         |Mul(x,y) -> arithEval x word state * arithEval y word state
 
+    (* Exercise 3.4 *)
+
     type cExp =
        | C  of char      (* Character value *)
        | ToUpper of cExp (* Converts lower case to upper case character, non-characters unchanged *)
@@ -47,6 +49,8 @@
         |ToUpper exp -> System.Char.ToUpper (charEval exp word state)
         |ToLower exp -> System.Char.ToLower (charEval exp word state)
         |CV exp -> fst word.[(arithEval exp word state)] 
+
+    (* Exercise 3.5 *)
 
     type bExp =             
        | TT                   (* true *)
@@ -73,7 +77,15 @@
     let (.>.) a b = ~~(a .=. b) .&&. (a .>=. b) (* numeric greater than *)
 
 
-    let rec boolEval bExp = failwith "not implemented"
+    let rec boolEval (exp:bExp) (word:word) (state:Map<string,int>) : bool =
+        match exp with
+        |TT -> true
+        |FF -> false 
+        |AEq (x,y) -> (arithEval x word state) = (arithEval y word state)
+        |ALt (x,y) ->(arithEval x word state) >= (arithEval y word state)
+        |Not exp -> not (boolEval exp word state)
+
+    (* Exercise 3.6 *)
 
     type stmnt =
        | Skip                        (* does nothing *)
@@ -82,9 +94,28 @@
        | ITE of bExp * stmnt * stmnt (* if-then-else statement *)    
        | While of bExp * stmnt       (* while statement *)
 
-    let rec evalStmnt stm = failwith "not implemented"
+    let rec evalStmnt (stmnt:stmnt) (word:word) (state:Map<string, int>) : Map<string, int> =
+        match stmnt with
+        |Skip -> state
+        |Ass (x,a) -> state.Add(x,arithEval a word state)
+        |Seq (stm1,stm2) -> evalStmnt stm2 word (evalStmnt stm1 word state)
+        |ITE (guard,stm1,stm2) -> 
+            if (boolEval guard word state) 
+                then evalStmnt stm1 word state 
+                else evalStmnt stm2 word state
+        |While (guard, stm) -> 
+            if (boolEval guard word state)
+                then evalStmnt (While (guard, stm)) word (evalStmnt stm word state)
+                else state
 
-    let stmnt2SquareFun stm = failwith "not imlpemented"
+    (* Exercise 3.7 *)
+
+    let hello:word = ('H',4)::('E',1)::('L',1)::('L',1)::[('O',2)]
+
+    let stmnt2SquareFun (stm:stmnt)  :squareFun =
+        fun (word:word) (pos:int) (acc:int) -> 
+        let state = evalStmnt stm word (Map.empty.Add("_pos_", pos).Add("_acc_", acc))
+        state.["_result_"] 
 
     let singleLetterScore : squareFun = stmnt2SquareFun (Ass ("_result_", arithSingleLetterScore))
     let doubleLetterScore : squareFun = stmnt2SquareFun (Ass ("_result_", arithDoubleLetterScore))
@@ -103,6 +134,8 @@
                                   Skip),
                              Ass ("i", V "i" .+. N 1)))))
 
+    (* Exercise 3.8 *)
+
     type square2 = (int * stmnt) list
 
     let SLS = [(0, Ass ("_result_", arithSingleLetterScore))]
@@ -114,3 +147,7 @@
 
     let calculatePoints2 : square2 list -> word -> int = failwith "not implemented"
     
+    [<EntryPoint>]
+    let main argv =
+        printfn "%A" (arithEval WL hello Map.empty)
+    0

@@ -6,6 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Assignment3_1.fs" />
+    <Compile Include="Assignment3_2.fs" />
+    <Compile Include="Assignment3_3.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

@@ -1,10 +1,12 @@
-﻿module aExp
-
+﻿
+module aExp
+    open System
     (* Exercise 3.3 *)
 
     type word = (char * int) list
     type squareFun = word -> int -> int -> int
-
+    
+    let hello:word = [('H',4);('E',1);('L',1);('L',1);('O',2)]
     type aExp =
         | N of int
         | V of string
@@ -76,6 +78,15 @@
     let (.>=.) a b = ~~(a .<. b)                (* numeric greater than or equal to *)
     let (.>.) a b = ~~(a .=. b) .&&. (a .>=. b) (* numeric greater than *)
 
+    let isVowel c =
+        match System.Char.ToLower c with
+        | 'a' | 'e' | 'i' | 'o' | 'u' -> true
+        | _ -> false
+    
+    let isConsonant c = 
+        if System.Char.IsLetter c then 
+            if isVowel c then false else true
+        else false
 
     let rec boolEval (exp:bExp) (word:word) (state:Map<string,int>) : bool =
         match exp with
@@ -84,6 +95,9 @@
         |AEq (x,y) -> (arithEval x word state) = (arithEval y word state)
         |ALt (x,y) ->(arithEval x word state) >= (arithEval y word state)
         |Not exp -> not (boolEval exp word state)
+        |Conj (x,y) -> (boolEval x word state) && (boolEval y word state)
+        |IsVowel exp -> isVowel (charEval exp word state)
+        |IsConsonant exp -> isConsonant (charEval exp word state)
 
     (* Exercise 3.6 *)
 
@@ -110,7 +124,6 @@
 
     (* Exercise 3.7 *)
 
-    let hello:word = ('H',4)::('E',1)::('L',1)::('L',1)::[('O',2)]
 
     let stmnt2SquareFun (stm:stmnt)  :squareFun =
         fun (word:word) (pos:int) (acc:int) -> 
@@ -146,4 +159,3 @@
     let TWS = [(1, Ass ("_result_", arithTripleWordScore))] @ SLS
 
     let calculatePoints2 : square2 list -> word -> int = failwith "not implemented"
- 

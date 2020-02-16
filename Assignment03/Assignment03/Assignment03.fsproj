@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Assignment3_1.fs" />
+    <Compile Include="Assignment3_2.fs" />
+    <Compile Include="Assignment3_3.fs" />
+  </ItemGroup>
+
+</Project>

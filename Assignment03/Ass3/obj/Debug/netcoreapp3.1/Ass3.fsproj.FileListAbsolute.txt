@@ -1,3 +1,0 @@
-C:\code\f#\Fsharp\Assignment03\Ass3\obj\Debug\netcoreapp3.1\Ass3.fsprojAssemblyReference.cache
-C:\code\f#\Fsharp\Assignment03\Ass3\obj\Debug\netcoreapp3.1\Ass3.AssemblyInfoInputs.cache
-C:\code\f#\Fsharp\Assignment03\Ass3\obj\Debug\netcoreapp3.1\Ass3.AssemblyInfo.fs

@@ -1,6 +1,8 @@
 ﻿// Learn more about F# at http://fsharp.org
 
 open System
+module MultiSet
+    type multiset = MultiSet of (Map<'a, uint32>ref int)
 
 [<EntryPoint>]
 let main argv =

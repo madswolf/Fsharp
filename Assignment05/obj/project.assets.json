@@ -112,11 +112,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\code\\f#\\Fsharp\\Assignment04\\Assignment04\\Assignment04.fsproj",
-      "projectName": "Assignment04",
-      "projectPath": "C:\\code\\f#\\Fsharp\\Assignment04\\Assignment04\\Assignment04.fsproj",
+      "projectUniqueName": "C:\\code\\f#\\Fsharp\\Assignment05\\Assignment05.fsproj",
+      "projectName": "Assignment05",
+      "projectPath": "C:\\code\\f#\\Fsharp\\Assignment05\\Assignment05.fsproj",
       "packagesPath": "C:\\Users\\Mads Wolf Jespersen\\.nuget\\packages\\",
-      "outputPath": "C:\\code\\f#\\Fsharp\\Assignment04\\Assignment04\\obj\\",
+      "outputPath": "C:\\code\\f#\\Fsharp\\Assignment05\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Mads Wolf Jespersen\\AppData\\Roaming\\NuGet\\NuGet.Config",

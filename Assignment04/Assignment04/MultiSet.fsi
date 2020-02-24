@@ -1,5 +1,5 @@
 ﻿module MultiSet
-type MultiSet<'a> when 'a : comparison = MultiSet of Map<'a,uint32> * uint32 
+type MultiSet<'a> when 'a : comparison = MultiSet of  Map<'a,uint32> * uint32
 val empty : MultiSet<'a>
 val isEmpty : MultiSet<'a> -> bool
 val size : MultiSet<'a> -> uint32
@@ -9,7 +9,7 @@ val add : 'a -> uint32 -> MultiSet<'a> -> MultiSet<'a>
 val addSingle : 'a -> MultiSet<'a> -> MultiSet<'a>
 val remove : 'a -> uint32 -> MultiSet<'a> -> MultiSet<'a>
 val removeSingle : 'a -> MultiSet<'a> -> MultiSet<'a>
-val fold : ('a -> 'b -> uint32 -> 'a) -> 'a -> MultiSet<'a> -> 'a
+val fold : ('a -> 'b -> uint32 -> 'a) -> 'a -> MultiSet<'b> -> 'a
 val foldBack : ('a -> uint32 -> 'b -> 'b) -> MultiSet<'a> -> 'b -> 'b
 val map : ('a -> 'b) -> MultiSet<'a> -> MultiSet<'b>
 val ofList : 'a list -> MultiSet<'a>

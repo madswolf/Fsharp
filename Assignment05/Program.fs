@@ -1,6 +1,7 @@
 ﻿// Learn more about F# at http://fsharp.org
 
 open System
+open Math
 
 let sum (m:int) (n:int) : int =
     let rec sumA (innerN:int) (acc:int) :int =
@@ -23,7 +24,19 @@ let foldBack (folder: 'a -> 'b -> 'b ) (list: 'a list) (acc:'b) :'b =
         | x::xs -> foldBackC xs (fun innerAcc -> continuation(folder x innerAcc)) 
     foldBackC list (fun x -> x)
 
+let fact (n:int) :int =
+    let rec factC (innerN:int) (continuation: int -> int) : int =
+        match innerN with 
+        |1 -> continuation 1  
+        |innerN -> factC (innerN-1) (fun x -> innerN * x)
+    factC n (fun x -> x)
 
+let factA x =
+    let rec aux acc =
+        function
+        | 0 -> acc
+        | x -> aux (x * acc) (x - 1)
+    aux 1 x
 
 [<EntryPoint>]
 let main argv =

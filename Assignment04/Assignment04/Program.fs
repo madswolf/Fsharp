@@ -38,6 +38,7 @@ module MultiSet
 
     let addSingle (key:'a) (set:MultiSet<'a>) : MultiSet<'a> =
         add key 1u set
+    let test1 = empty |> add 'a' 2u |> add 'b' 3u
 
     let set = empty |> add "a" 2u |> add "b" 1u |> add "c" 3u |> add "y" 5u;;
 
@@ -72,15 +73,23 @@ module MultiSet
     let toList (set:MultiSet<'a>) : 'a list = 
         let func = fun acc key value -> List.fold (fun innerAcc item -> key :: innerAcc) acc [1u..value]
         List.rev (fold (func) [] set)
+
+    //less complex but worse performance, as replicate is linear to n, and so is @. So it's O(2n) and not O(n) like the previous
+    let toListAlt (set:MultiSet<'a>) : 'a list = 
+        let func = fun acc key (value:uint32) -> (List.replicate (int value) key) @ acc
+        List.rev (fold (func) [] set)
     
     let set2 = empty |> add "a" 5u |> add "g" 8u |> add "c" 2u |> add "y" 6u;;
 
     let union (set1:MultiSet<'a>) (set2:MultiSet<'a>) : MultiSet<'a> =
+
          //remove intances of overlap where set1 has less
         let remainder = fold (fun acc key value -> if(numItems key set2 < value) then add key value acc else acc ) empty set1
+         //remove intances of overlap where set2 has less
+        let remainder2 = fold (fun acc key value -> if(numItems key set1 < value) then add key value acc else acc ) empty set2
 
-        // add the remainder of set1 to set2 and return
-        fold (fun acc key value -> add key value acc) remainder set2 
+        // add the remainder of set1 and set2 together and return
+        fold (fun acc key value -> add key value acc) remainder remainder2 
 
     let sum (set1:MultiSet<'a>) (set2:MultiSet<'a>) : MultiSet<'a> =
         fold (fun acc key value ->   add key value acc) set2 set1

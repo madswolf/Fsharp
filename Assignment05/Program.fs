@@ -1,7 +1,6 @@
 ﻿// Learn more about F# at http://fsharp.org
 
 open System
-open Math
 
 let sum (m:int) (n:int) : int =
     let rec sumA (innerN:int) (acc:int) :int =
@@ -37,6 +36,23 @@ let factA x =
         | 0 -> acc
         | x -> aux (x * acc) (x - 1)
     aux 1 x
+
+//this is an unusual recursion where it goes up instead of down, but it seemed convoluted to go the other way
+let fibA (x:int) :int =
+    let rec aux (nminus1:int) (nminus2:int) (n:int) :int =
+        match n with  
+        |1 -> aux 1 0 (n+1)
+        |n when n = x -> nminus1 + nminus2
+        |n -> aux (nminus1+nminus2) nminus1 (n+1)
+    aux 0 0 1
+
+let fibC (x:int) :int =
+    let rec aux (n:int) (continuation:int -> int): int =
+        match n with
+        |1 -> aux (n+1) (fun x -> 1 + 0 + x)
+        |n when n = x -> continuation 0
+        |n -> aux (n+1) (fun x -> continuation x + x )
+    aux 1 (fun x -> x)
 
 [<EntryPoint>]
 let main argv =

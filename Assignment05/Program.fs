@@ -113,9 +113,21 @@ and
 
 let odds = Seq.initInfinite(fun x -> x) |> Seq.filter (fun x -> x % 2 = 1)
 
-let facts = Seq.initInfinite (fun x -> factA x)
+    //This has fast lookup time for items, but recomputes it every time, and is not well suited for caching
+let facts = Seq.initInfinite (fun x -> factA x) 
 
-
+    //works better with caching, but sacrifices lookup time
+    //it's slower than the previous version on arbitrary lookup, even for an item that's been cached, 
+    //i think this is because it has to traverse the sequence
+let factsAlt = 
+    (1,1) |> 
+    Seq.unfold (fun state -> 
+        let index = snd state
+        let previousvalue = fst state
+        let currentvalue = previousvalue * (index)
+        Some(currentvalue, (currentvalue, index + 1))
+        )|>
+    Seq.cache
 
 [<EntryPoint>]
 let main argv =

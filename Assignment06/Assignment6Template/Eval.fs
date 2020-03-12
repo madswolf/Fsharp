@@ -8,9 +8,16 @@
     let state = mkState [("x", 5); ("y", 42)] hello ["_pos_"; "_result_"]
     let emptyState = mkState [] [] []
     
-    let add a b = failwith "Not implex½mented"      
-    let div a b = failwith "Not implemented"      
-
+    let add (a:SM<int>) (b:SM<int>) : SM<int> = 
+        a >>= fun x -> 
+        b >>= fun y->
+        ret (x + y)
+    
+    let div(a:SM<int>) (b:SM<int>) : SM<int> =  
+        a >>= fun x -> 
+        b >>= fun y->
+        if y <> 0 then ret (x / y) else fail DivisionByZero
+          
     type aExp =
         | N of int
         | V of string
@@ -22,6 +29,7 @@
         | Div of aExp * aExp
         | Mod of aExp * aExp
         | CharToInt of cExp
+        |Inc of string 
 
     and cExp =
        | C  of char  (* Character value *)
@@ -43,6 +51,16 @@
        | IsVowel of cExp      (* check for vowel *)
        | IsConsonant of cExp  (* check for constant *)
 
+    let isVowel c =
+        match System.Char.ToLower c with
+        | 'a' | 'e' | 'i' | 'o' | 'u' -> true
+        | _ -> false
+    
+    let isConsonant c = 
+        if System.Char.IsLetter c then 
+            if isVowel c then false else true
+        else false
+    
     let (.+.) a b = Add (a, b)
     let (.-.) a b = Sub (a, b)
     let (.*.) a b = Mul (a, b)
@@ -61,11 +79,51 @@
     let (.>=.) a b = ~~(a .<. b)                (* numeric greater than or equal to *)
     let (.>.) a b = ~~(a .=. b) .&&. (a .>=. b) (* numeric greater than *)    
 
-    let arithEval a : SM<int> = failwith "Not implemented"      
+    let binop f a b =
+        a >>= fun x ->     
+        b >>= fun y ->     
+        ret (f x y)
 
-    let charEval c : SM<char> = failwith "Not implemented"      
+    let binopWithError f a b c e =  
+           a >>= fun x -> 
+           b >>= fun y->
+           if c y  then ret (f x y) else fail e
 
-    let boolEval b : SM<bool> = failwith "Not implemented"
+    let rec arithEval (a:aExp) : SM<int> =
+        match a with
+        |N exp -> ret exp
+        |V exp -> lookup exp
+        |WL    -> wordLength
+        |PV exp   -> arithEval exp >>= pointValue
+        |Add(x,y) -> binop (+) (arithEval x) (arithEval y)
+        |Sub(x,y) -> binop (-) (arithEval x) (arithEval y)
+        |Mul(x,y) -> binop ( * ) (arithEval x) (arithEval y)
+        |Div(x,y) -> binopWithError (/) (arithEval x) (arithEval y) ((<>) 0) DivisionByZero
+        |Mod(x,y) -> binopWithError (%) (arithEval x) (arithEval y) ((<>) 0) DivisionByZero
+        |CharToInt cExp -> charEval cExp >>= (int >> ret)
+        |Inc x ->
+            lookup x >>= fun v -> 
+            update x (v + 1) >>= fun () ->
+            ret (v + 1) 
+    and
+        charEval (c:cExp) : SM<char> = 
+        match c with
+        |C cExp -> ret cExp
+        |CV aExp -> (arithEval aExp) >>= characterValue
+        |ToUpper cExp -> charEval cExp >>= (System.Char.ToUpper >> ret)
+        |ToLower cExp -> charEval cExp >>= (System.Char.ToLower >> ret)
+        |IntToChar aExp ->  arithEval aExp >>= (char >> ret)
+    and
+        boolEval b : SM<bool> = 
+        match b with
+        |TT -> ret true
+        |FF -> ret false
+        |AEq(x,y) -> binop (=) (arithEval x) (arithEval y)
+        |ALt(x,y) -> binop (<) (arithEval x) (arithEval y)
+        |Not bExp -> boolEval bExp >>= (not >> ret)
+        |Conj(x,y) -> binop (&&) (boolEval x) (boolEval y)
+        |IsVowel bExp -> charEval bExp >>= (isVowel >> ret)
+        |IsConsonant bExp -> charEval bExp >>= (isConsonant >> ret)
 
 
     type stm =                (* statements *)
@@ -76,7 +134,15 @@
     | ITE of bExp * stm * stm (* if-then-else statement *)
     | While of bExp * stm     (* while statement *)
 
-    let rec stmntEval stmnt : SM<unit> = failwith "Not implemented"
+    let rec stmntEval (stmnt:stm) : SM<unit> = 
+        match stmnt with
+        |Declare string -> declare string 
+        |Ass(string,aExp) -> (arithEval aExp) >>= (update string)
+        |Skip -> ret ()
+        |Seq(x,y) -> stmntEval x >>>= stmntEval y
+        |ITE(bExp,x,y) ->  push>>>=(boolEval bExp)>>= (fun bool -> stmntEval (if bool then x else y))>>=(fun _ -> pop)
+        |While(bExp, stm) -> (stmntEval (ITE(bExp,Seq(stm,While(bExp,stm)),Skip)))
+        
 
 (* Part 3 (Optional) *)
 
@@ -90,25 +156,162 @@
         
     let prog = new StateBuilder()
 
-    let arithEval2 a = failwith "Not implemented"
-    let charEval2 c = failwith "Not implemented"
-    let rec boolEval2 b = failwith "Not implemented"
+    let binop2 f a b = 
+        prog{
+            let! x = a
+            let! y = b
+            return f x y
+        }
 
-    let stmntEval2 stm = failwith "Not implemented"
+    let binop2WithError f a b c e =
+        prog{
+            let! x = a
+            let! y = b
+            if c y then return f x y
+            else return! fail e
+        }
 
+    let rec arithEval2 a = 
+        match a with
+        |N aExp -> prog{return aExp}
+        |V aExp -> 
+            prog{
+                let! x = lookup aExp
+                return x
+            }
+        |WL     -> 
+            prog{
+                let! x = wordLength
+                return x
+            }
+        |PV aExp -> 
+            prog{
+                let! x = arithEval2 aExp
+                let! y = pointValue x
+                return y
+            }
+        |Add(x,y) -> binop2 (+) (arithEval x) (arithEval y)
+        |Sub(x,y) -> binop2 (-) (arithEval x) (arithEval y)
+        |Mul(x,y) -> binop2 ( * ) (arithEval x) (arithEval y)
+        |Div(x,y) -> binop2WithError (/) (arithEval x) (arithEval y) ((<>) 0) DivisionByZero
+        |Mod(x,y) -> binop2WithError (%) (arithEval x) (arithEval y) ((<>) 0) DivisionByZero
+        |CharToInt cExp -> 
+            prog{
+                let! x = charEval2 cExp
+                return int x
+            }
+    and
+        charEval2 c = 
+        match c with
+        |C cExp -> prog{return cExp}
+        |CV aExp -> 
+            prog{
+                let! x = arithEval2 aExp
+                let! y = characterValue x
+                return y
+            }
+        |ToUpper cExp -> 
+            prog{
+                let! x = charEval2 cExp
+                return System.Char.ToUpper x
+            }
+        |ToLower cExp -> 
+            prog{
+                let! x = charEval2 cExp
+                return System.Char.ToLower x
+            }
+        |IntToChar aExp -> 
+            prog{
+                let! x = arithEval2 aExp
+                return char x
+            }
+    and
+        boolEval2 b = 
+        match b with
+        |TT -> prog{return true}
+        |FF -> prog{return false}
+        |AEq(x,y) -> binop (=) (arithEval2 x) (arithEval2 y)
+        |ALt(x,y) -> binop (<) (arithEval2 x) (arithEval2 y)
+        |Not bExp -> 
+            prog{
+                let! x = boolEval2 bExp
+                return not x
+                }
+        |Conj(x,y) -> binop (&&) (boolEval2 x) (boolEval2 y)
+        |IsVowel cExp -> 
+            prog{
+                let! x = charEval2 cExp
+                return isVowel x
+            } 
+        |IsConsonant cExp -> 
+            prog{
+                let! x = charEval2 cExp
+                return isConsonant x
+            }
+
+    (*let rec stmntEval (stmnt:stm) : SM<unit> = 
+        match stmnt with
+        |Declare string -> declare string 
+        |Ass(string,aExp) -> (arithEval aExp) >>= (update string)
+        |Skip -> ret ()
+        |Seq(x,y) -> stmntEval x >>>= stmntEval y
+        |ITE(bExp,x,y) ->  push>>>=(boolEval bExp)>>= fun bool -> stmntEval (if bool then x else y)
+        |While(bExp, stm) -> (stmntEval (ITE(bExp,Seq(stm,While(bExp,stm)),Skip))) *)
+
+    let rec stmntEval2 stm = 
+        match stm with
+        |Declare string -> 
+            prog{
+                do! declare string
+            }
+        |Ass(string,aExp) -> 
+            prog{
+                let! x = arithEval2 aExp
+                do! update string x
+            }
+        |Skip -> prog{return ()}
+        |Seq(x,y) ->
+            prog{
+                do! stmntEval2 x
+                do! stmntEval2 y
+            }
+        |ITE(bExp, x, y) -> 
+            prog{
+                do! push
+                let! bool = boolEval2 bExp
+                if bool 
+                then 
+                    let! a = stmntEval2 x
+                    return a
+                else
+                    let! b = stmntEval2 y
+                    return b
+            }
+        |While(bExp, stm) -> stmntEval2 (ITE(bExp,Seq(stm,While(bExp,stm)),Skip))
+        
 (* Part 4 (Optional) *) 
 
     type word = (char * int) list
     type squareFun = word -> int -> int -> Result<int, Error>
-
-    let stmntToSquareFun stm = failwith "Not implemented"
-
+    
+    (*let stmnt2SquareFun (stm:stmnt)  :squareFun =
+          fun (word:word) (pos:int) (acc:int) -> 
+          let state = evalStmnt stm word (Map.empty.Add("_pos_", pos).Add("_acc_", acc))
+          state.["_result_"] *)
+    
+    let stmntToSquareFun stm = 
+        fun word pos acc ->
+            let state = mkState [("_pos_", pos);("_acc_", acc);("_result_",0)] word ["_pos_";"_acc_";"_result_"] 
+            (stmntEval2 stm)>>>= (lookup "_result_") |> evalSM state  
 
     type coord = int * int
 
     type boardFun = coord -> Result<squareFun option, Error> 
 
-    let stmntToBoardFun stm m = failwith "Not implemented"
+    let stmntToBoardFun stm (squares:Map<int,squareFun>): boardFun = 
+        fun (x,y) ->
+            let state = mkState [("_x_", x);("_y_", y);("_result_",0)] [] ["_x_";"_y_";"_result_"] 
+            (stmntEval2 stm)>>>= (lookup "_result_")>>=(fun id -> ret (squares.TryFind id)) |> evalSM state  
 
     type board = {
         center        : coord
@@ -116,5 +319,9 @@
         squares       : boardFun
     }
 
-    let mkBoard c defaultSq boardStmnt ids = failwith "Not implemented"
+    let mkBoard center defaultSq boardStmnt ids : board = 
+        let map = List.fold(fun acc item -> Map.add (fst item) (stmntToSquareFun (snd item)) acc) Map.empty ids
+        let defaultSquare = stmntToSquareFun defaultSq 
+        let squares = stmntToBoardFun boardStmnt map
+        {center= center; defaultSquare= defaultSquare; squares= squares}
     

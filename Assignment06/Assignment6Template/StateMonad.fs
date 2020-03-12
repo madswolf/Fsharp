@@ -58,7 +58,7 @@
 
     let pointValue (pos : int) : SM<int> = S(fun s -> 
         match s.word.Length with
-        |length when length > pos -> Success(snd s.word.[pos],s)
+        |length when length > pos && pos >= 0 -> Success(snd s.word.[pos],s)
         |_ -> Failure(IndexOutOfBounds pos))
 
     let lookup (x : string) : SM<int> = 
@@ -96,8 +96,10 @@
             |m::ms -> 
                 match Map.tryFind var m with
                 |Some _ -> Some ((Map.add var value m)::ms)
-                |None   -> aux ms 
-
+                |None   -> 
+                    match aux ms with
+                    |Some map -> Some (m::map)
+                    |None -> None
         S(fun s ->
             match aux (s.vars) with
             |Some m -> Success ((),{s with vars = m})

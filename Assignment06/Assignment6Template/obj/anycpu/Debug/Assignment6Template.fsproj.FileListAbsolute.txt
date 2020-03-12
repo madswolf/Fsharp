@@ -3,3 +3,8 @@ C:\code\f#\Fsharp\Assignment06\Assignment6Template\bin\Debug\Assignment6Template
 C:\code\f#\Fsharp\Assignment06\Assignment6Template\obj\anycpu\Debug\Assignment6Template.fsprojAssemblyReference.cache
 C:\code\f#\Fsharp\Assignment06\Assignment6Template\obj\anycpu\Debug\Assignment6Template.exe
 C:\code\f#\Fsharp\Assignment06\Assignment6Template\obj\anycpu\Debug\Assignment6Template.pdb
+D:\code\Fsharp\Assignment06\Assignment6Template\obj\anycpu\Debug\Assignment6Template.fsprojAssemblyReference.cache
+D:\code\Fsharp\Assignment06\Assignment6Template\obj\anycpu\Debug\Assignment6Template.exe
+D:\code\Fsharp\Assignment06\Assignment6Template\obj\anycpu\Debug\Assignment6Template.pdb
+D:\code\Fsharp\Assignment06\Assignment6Template\bin\Debug\Assignment6Template.exe
+D:\code\Fsharp\Assignment06\Assignment6Template\bin\Debug\Assignment6Template.pdb

@@ -161,6 +161,7 @@ let main argv =
                   evalSM emptyState)
     printfn "%A" (stmntEval (Seq (Declare "x", Ass ("x", N 5))) >>>= lookup "x"  |> 
                   evalSM emptyState)
+
     printfn "%A" (stmntEval 
                      (Seq (Declare "x", 
                         Seq (Declare "y", 

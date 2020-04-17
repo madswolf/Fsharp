@@ -249,15 +249,6 @@
                 return isConsonant x
             }
 
-    (*let rec stmntEval (stmnt:stm) : SM<unit> = 
-        match stmnt with
-        |Declare string -> declare string 
-        |Ass(string,aExp) -> (arithEval aExp) >>= (update string)
-        |Skip -> ret ()
-        |Seq(x,y) -> stmntEval x >>>= stmntEval y
-        |ITE(bExp,x,y) ->  push>>>=(boolEval bExp)>>= fun bool -> stmntEval (if bool then x else y)
-        |While(bExp, stm) -> (stmntEval (ITE(bExp,Seq(stm,While(bExp,stm)),Skip))) *)
-
     let rec stmntEval2 stm = 
         match stm with
         |Declare string -> 
@@ -294,11 +285,6 @@
     type word = (char * int) list
     type squareFun = word -> int -> int -> Result<int, Error>
     
-    (*let stmnt2SquareFun (stm:stmnt)  :squareFun =
-          fun (word:word) (pos:int) (acc:int) -> 
-          let state = evalStmnt stm word (Map.empty.Add("_pos_", pos).Add("_acc_", acc))
-          state.["_result_"] *)
-    
     let stmntToSquareFun stm = 
         fun word pos acc ->
             let state = mkState [("_pos_", pos);("_acc_", acc);("_result_",0)] word ["_pos_";"_acc_";"_result_"] 
@@ -312,6 +298,15 @@
         fun (x,y) ->
             let state = mkState [("_x_", x);("_y_", y);("_result_",0)] [] ["_x_";"_y_";"_result_"] 
             (stmntEval2 stm)>>>= (lookup "_result_")>>=(fun id -> ret (squares.TryFind id)) |> evalSM state  
+            
+    let stmntToBoardFunAlt stm (squares:Map<int,squareFun>) : boardFun =
+        fun (x,y)->
+            let state = mkState [("_x_", x);("_y_", y);("_result_",0)] [] ["_x_";"_y_";"_result_"]
+            prog{
+                do! stmntEval2 stm
+                let! id = lookup "_result_"
+                return squares.TryFind id
+            } |> evalSM state
 
     type board = {
         center        : coord

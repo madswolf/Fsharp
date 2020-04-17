@@ -1,37 +1,37 @@
 {
   "format": 1,
   "restore": {
-    "C:\\code\\f#\\Fsharp\\Assignment04\\Assignment04\\Assignment04.fsproj": {}
+    "D:\\code\\Fsharp\\Assignment04\\Assignment04\\Assignment04.fsproj": {}
   },
   "projects": {
-    "C:\\code\\f#\\Fsharp\\Assignment04\\Assignment04\\Assignment04.fsproj": {
+    "D:\\code\\Fsharp\\Assignment04\\Assignment04\\Assignment04.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\code\\f#\\Fsharp\\Assignment04\\Assignment04\\Assignment04.fsproj",
+        "projectUniqueName": "D:\\code\\Fsharp\\Assignment04\\Assignment04\\Assignment04.fsproj",
         "projectName": "Assignment04",
-        "projectPath": "C:\\code\\f#\\Fsharp\\Assignment04\\Assignment04\\Assignment04.fsproj",
-        "packagesPath": "C:\\Users\\Mads Wolf Jespersen\\.nuget\\packages\\",
-        "outputPath": "C:\\code\\f#\\Fsharp\\Assignment04\\Assignment04\\obj\\",
+        "projectPath": "D:\\code\\Fsharp\\Assignment04\\Assignment04\\Assignment04.fsproj",
+        "packagesPath": "C:\\Users\\Mads\\.nuget\\packages\\",
+        "outputPath": "D:\\code\\Fsharp\\Assignment04\\Assignment04\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Mads Wolf Jespersen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Mads\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "netcoreapp3.1"
+          "netcoreapp3.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "netcoreapp3.1": {
+          "netcoreapp3.0": {
             "projectReferences": {}
           }
         }
       },
       "frameworks": {
-        "netcoreapp3.1": {
+        "netcoreapp3.0": {
           "dependencies": {
             "FSharp.Core": {
               "target": "Package",
@@ -53,7 +53,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files (x86)\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }

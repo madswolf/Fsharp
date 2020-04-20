@@ -95,7 +95,7 @@ module ImpParser =
         delimitise '{' '}' p
 
     let pid =
-        (letterChar .>>. many alphaNumeric) |>> fun (x,y) -> (x::y) |> List.toArray |> (fun s -> System.String s)
+        ((letterChar <|> (pchar '_')) .>>. many (alphaNumeric <|> (pchar '_')) ) |>> fun (x,y) -> (x::y) |> List.toArray |> (fun s -> System.String s)
 
     let unop op a =
         op >>. spaces >>. a

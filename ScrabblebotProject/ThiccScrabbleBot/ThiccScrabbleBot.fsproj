@@ -5,8 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="StateMonad.fs" />
     <Compile Include="Combinators.fs" />
     <Compile Include="Parser.fs" />
+    <Compile Include="Eval.fs" />
     <Compile Include="MultiSet.fsi" />
     <Compile Include="MultiSet.fs" />
     <Compile Include="Scrabble.fsi" />

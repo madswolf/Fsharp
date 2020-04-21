@@ -1,4 +1,4 @@
-module ThiccScrabbleBot.Tests
+module ThiccScrabbleBot.Tests1
 
 open System
 open Xunit
@@ -68,10 +68,10 @@ let traverseUntillNull_starting00_given_continues_vertical_starting00_hello_and_
     Assert.Equal<Collections.Generic.IEnumerable<char>>(expected, actual)
 
 [<Fact>]
-let traverseUntillNull_starting04_given_continues_vertical_starting00_hello_and_oof_returns_reverse_hello () =
+let traverseUntillNull_starting04_given_continues_vertical_starting00_hello_and_oof_returns_hello () =
     let things = [('O',(0,-4));('F',(0,-3));('O',(0,-2));('H',(0,0));('E',(0,1));('L',(0,2));('L',(0,3));('O',(0,4))]
     let map = List.fold(fun acc item -> Map.add (snd item) (fst item) acc) Map.empty things
     let startcoord = (0,4)
     let actual = traverseUntillNull [] map startcoord false -1
-    let expected = ['H';'E';'L';'L';'O'] |> List.rev
+    let expected = ['H';'E';'L';'L';'O']
     Assert.Equal<Collections.Generic.IEnumerable<char>>(expected, actual)

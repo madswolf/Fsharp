@@ -136,7 +136,7 @@ module Scrabble =
         let squares = squaresOfProgToSquaresOfFun boardP.squares
         let boardFun = boardProgToBoardFun boardP.prog Map.empty
         let board = mkBoard boardFun boardP.usedSquare squares boardP.center Map.empty
-
+        printf "%A" boardFun
         fun () -> playGame cstream tiles (mkState playerNumber players playerTurn dict handSet board)
     
 

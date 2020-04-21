@@ -9,7 +9,7 @@
     
     
     //A function that traverses the given map horisontally or vertically positively or negatively depending on arguments
-    let rec traverseUntillNull acc (map:Map<coord,char>) coord horisontal up=
+    let rec traverseUntillNull acc (map:Map<coord,char>) coord horisontal up =
         let result = map.TryFind coord
         if (result).IsSome 
         then 
@@ -22,10 +22,15 @@
         then acc
         else 
             match move with
-            |x::xs -> 
+            |x::y::xs -> 
                 let thing = traverseUntillNull [] map (fst x) (not horisontal) 1
-                let acc = lookup (string (traverseUntillNull thing map (fst x) (not horisontal) -1)) dict
-                traverseUntillLastLetterAndVerifyOrtogonalWords acc map xs dict horisontal
+                let resultingWord = string (traverseUntillNull thing map (fst x) (not horisontal) -1)
+                let acc = isWord (resultingWord) dict
+                traverseUntillLastLetterAndVerifyOrtogonalWords acc map (y::xs) dict horisontal
+            |x::xs -> 
+                let thing = traverseUntillNull [] map (fst x) (horisontal) 1
+                let resultingWord = string (traverseUntillNull thing map (fst x) (horisontal) -1)
+                isWord (resultingWord) dict
             |_ -> acc
          
     

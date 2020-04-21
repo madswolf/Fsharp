@@ -130,7 +130,7 @@ module ImpParser =
     
     let VParse = pid |>> V  <?> "Var"
     let ParParse = parenthesise TermParse
-    do aref := choice [NegParse; NParse;  PVParse; CharToIntParse; ParParse; VParse]
+    do aref := choice [PVParse; CharToIntParse; NegParse; NParse; VParse; ParParse]
 
     let AexpParse = TermParse 
 
@@ -161,12 +161,12 @@ module ImpParser =
     let ALOEParse = binop (pstring "<=") AexpParse AexpParse |>> (fun x -> fst x .<=. snd x) <?> "Less Than Or Equal"
     let AGtOEParse = binop (pstring ">=") AexpParse AexpParse |>> (fun x -> fst x .>=. snd x) <?> "Less Than Or Equal"
     let AGtParse = binop (pstring ">") AexpParse AexpParse |>> (fun x -> fst x .>. snd x) <?> "Greater than"
-    do bPref := choice [ALOEParse; AGtOEParse; AEqParse; AIeParse; ALtParse; AGtParse; BAtomParse]
+    do bPref := choice [AEqParse; AIeParse; ALtParse; ALOEParse; AGtParse; AGtOEParse; BAtomParse]
 
     let BNegParse = unop (pstring "~") BTermParse |>> Not <?> "Not"
     let TrueParse = pTrue |>> (fun x ->  TT) <?> "True"
     let FalseParse = pFalse |>> (fun x -> FF) <?> "False"
-    do bAref := choice [BNegParse; TrueParse; FalseParse; parenthesise BTermParse]
+    do bAref := choice [ TrueParse; FalseParse; BNegParse; parenthesise BTermParse]
 
     let BexpParse = BTermParse
     

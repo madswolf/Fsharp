@@ -23,3 +23,8 @@ let rec lookup (word:string) (dict:Dictionary) : bool =
     else
         if((map.TryFind word.[0]).IsNone) then false
         else lookup word.[1..word.Length-1] map.[word.[0]]
+
+
+let isWord  (word:string) (dict:Dictionary) : bool = 
+    if word = "[]" then true else lookup word dict
+

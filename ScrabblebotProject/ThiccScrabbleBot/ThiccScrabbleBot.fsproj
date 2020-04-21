@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Dictionary.fs" />
     <Compile Include="StateMonad.fs" />
     <Compile Include="Combinators.fs" />
     <Compile Include="Parser.fs" />
@@ -12,6 +13,8 @@
     <Compile Include="MultiSet.fsi" />
     <Compile Include="MultiSet.fs" />
     <Compile Include="Scrabble.fsi" />
+    <Compile Include="State.fs" />
+    <Compile Include="Util.fs" />
     <Compile Include="Scrabble.fs" />
   </ItemGroup>
 

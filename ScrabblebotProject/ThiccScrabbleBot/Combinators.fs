@@ -292,6 +292,3 @@ module TextParser =
     let (.>*>.) p1 p2 = p1 .>> spaces .>>. p2
     let (.>*>) p1 p2 = p1 .>> spaces .>> p2
     let (>*>.) p1 p2 = p1 .>> spaces >>. p2
-
-
-    

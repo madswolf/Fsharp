@@ -1,5 +1,5 @@
 ﻿module Eval
-    
+    open JParsec    
     open StateMonad
     open Ass7
     (* Code for testing *)
@@ -272,14 +272,14 @@
             |Success v -> v
             |_ -> failwith "uwu"
 
-    type board = {
+    (*type board = {
         center        : coord
         defaultSquare : squareFun
         squares       : boardFun
     }
 
     //didn't bother fixing after changing boardFun
-    (*let mkBoard center defaultSq boardStmnt ids : board = 
+    let mkBoard center defaultSq boardStmnt ids : board = 
         let map = List.fold(fun acc item -> Map.add (fst item) (stmntToSquareFun (snd item)) acc) Map.empty ids
         let defaultSquare = stmntToSquareFun defaultSq 
         let squares = stmntToBoardFun boardStmnt map

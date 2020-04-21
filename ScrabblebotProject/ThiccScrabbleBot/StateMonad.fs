@@ -1,5 +1,4 @@
 ﻿module StateMonad
-
     type Error = 
         | VarExists of string
         | VarNotFound of string

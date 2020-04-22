@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="PerpendicularWord.fs" />
     <Compile Include="Tests3.fs" />
     <Compile Include="Tests2.fs" />
     <Compile Include="Tests.fs" />

@@ -1,9 +1,7 @@
 ﻿module Ass7
 
 open System
-open JParsec
-open TextParser
-open Parser
+open FParsec
 
 type aExp =
     | N of int              (* Integer literal *)
@@ -82,6 +80,15 @@ module ImpParser =
     let pwhile = pstring "while"
     let pdo = pstring "do"
 
+    let whitespaceChar = satisfy Char.IsWhiteSpace
+    let pAnyChar = anyChar
+    let letterChar = asciiLetter
+    let alphaNumeric = asciiLetter <|> digit
+    let charListToStr charList = String(List.toArray charList) |> string
+    let pint = pint32
+    let choice ps = ps |> Seq.map attempt |> choice
+    let (<|>) p1 p2 = attempt p1 <|> attempt p2
+
     let delimitise char1 char2 =
         let start = pchar char1
         let ending = pchar char2
@@ -97,6 +104,11 @@ module ImpParser =
     let pid =
         ((letterChar <|> (pchar '_')) .>>. many (alphaNumeric <|> (pchar '_')) ) |>> fun (x,y) -> (x::y) |> List.toArray |> (fun s -> System.String s)
 
+
+    let (.>*>.) p1 p2 = p1 .>> spaces .>>. p2
+    let (.>*>) p1 p2 = p1 .>> spaces .>> p2
+    let (>*>.) p1 p2 = p1 .>> spaces >>. p2
+    let space1 = many1 whitespaceChar <?> "space1"
     let unop op a =
         op >>. spaces >>. a
 
@@ -106,10 +118,10 @@ module ImpParser =
 
 
     //Aexp
-    let TermParse, tref = createParserForwardedToRef<TextInputState, aExp>() 
-    let cParse,cref = createParserForwardedToRef<TextInputState, cExp>()
-    let ProdParse, pref = createParserForwardedToRef<TextInputState, aExp>()
-    let AtomParse, aref = createParserForwardedToRef<TextInputState, aExp>()
+    let TermParse, tref = createParserForwardedToRef<aExp,unit>() 
+    let cParse,cref = createParserForwardedToRef<cExp,unit>()
+    let ProdParse, pref = createParserForwardedToRef<aExp,unit>()
+    let AtomParse, aref = createParserForwardedToRef<aExp,unit>()
 
     let AddParse = binop (pchar '+') ProdParse TermParse |>> Add <?> "Add"
     let SubParse = binop (pchar '-') ProdParse TermParse |>> Sub <?> "Sub"
@@ -147,9 +159,9 @@ module ImpParser =
     let CexpParse = cParse
 
     //Bexp
-    let BTermParse,bTref = createParserForwardedToRef<TextInputState, bExp>()
-    let BProdParse, bPref = createParserForwardedToRef<TextInputState, bExp>()
-    let BAtomParse, bAref = createParserForwardedToRef<TextInputState, bExp>()
+    let BTermParse,bTref = createParserForwardedToRef<bExp,unit>()
+    let BProdParse, bPref = createParserForwardedToRef<bExp,unit>()
+    let BAtomParse, bAref = createParserForwardedToRef<bExp,unit>()
 
     let ConjParse = binop (pstring @"/\") BProdParse BTermParse |>> Conj <?> "Conjuntion"
     let DisjParse = binop (pstring @"\/") BProdParse BTermParse |>> (fun x -> fst x .||. snd x) <?> "Disjuntion"
@@ -172,8 +184,8 @@ module ImpParser =
     
 
     //Stmnt
-    let STermParse,sref = createParserForwardedToRef<TextInputState, stm>()
-    let SControleStmParse, scref = createParserForwardedToRef<TextInputState, stm>()
+    let STermParse,sref = createParserForwardedToRef<stm,unit>()
+    let SControleStmParse, scref = createParserForwardedToRef<stm,unit>()
     
     let VarParse = binop (pstring ":=") pid AexpParse |>> Ass
     let DeclareParse = pstring "declare" >>. space1 >>. pid |>> Declare <?> "Declare"
@@ -187,3 +199,8 @@ module ImpParser =
 
 
     let stmParse = STermParse
+
+    let runTextParser f s =
+        match runParserOnString f () "" s with
+        | Success (k, _, _) -> k
+        | Failure (err, _, _) -> failwith ""

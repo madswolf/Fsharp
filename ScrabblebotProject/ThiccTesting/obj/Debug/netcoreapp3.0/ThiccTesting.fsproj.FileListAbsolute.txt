@@ -109,3 +109,5 @@ D:\code\Fsharp\ScrabblebotProject\ThiccTesting\obj\Debug\netcoreapp3.0\ThiccTest
 D:\code\Fsharp\ScrabblebotProject\ThiccTesting\obj\Debug\netcoreapp3.0\ThiccTesting.fsproj.CopyComplete
 D:\code\Fsharp\ScrabblebotProject\ThiccTesting\obj\Debug\netcoreapp3.0\ThiccTesting.dll
 D:\code\Fsharp\ScrabblebotProject\ThiccTesting\obj\Debug\netcoreapp3.0\ThiccTesting.pdb
+D:\code\Fsharp\ScrabblebotProject\ThiccTesting\bin\Debug\netcoreapp3.0\FParsec.dll
+D:\code\Fsharp\ScrabblebotProject\ThiccTesting\bin\Debug\netcoreapp3.0\FParsecCS.dll

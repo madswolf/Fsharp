@@ -26,5 +26,5 @@ let rec lookup (word:string) (dict:Dictionary) : bool =
 
 
 let isWord  (word:string) (dict:Dictionary) : bool = 
-    if word = "[]" then true else lookup word dict
+    if (word.Length = 0 || word.Length = 1) then true else lookup word dict
 

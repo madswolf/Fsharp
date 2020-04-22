@@ -1,7 +1,7 @@
 // Learn more about F# at http://fsharp.org
 
 open System
-
+open System.IO
 open ScrabbleUtil
 
 let readLines filePath = System.IO.File.ReadLines(filePath) |> List.ofSeq
@@ -20,7 +20,7 @@ let spawnMultiples name bot =
 let main argv =
     DebugPrint.debugFlag <- false // Change to false to supress debug output
 
-    let board = StandardBoard.standardBoard
+    let board = StandardBoard.standardBoard ()
     let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     let dictionary = readLines "../../../EnglishDictionary.txt"
     let handSize = 7u

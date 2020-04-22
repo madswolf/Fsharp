@@ -1,0 +1,121 @@
+ITE
+  (Conj (AEq (V "_x_",N 0),AEq (V "_y_",N 0)),Ass ("_result_",N 0),
+   Seq
+     (Declare "xabs",
+      Seq
+        (Declare "yabs",
+         Seq
+           (ITE
+              (ALt (V "_x_",N 0),Ass ("xabs",Mul (V "_x_",Mul (N -1,N 1))),
+               Ass ("xabs",V "_x_")),
+            Seq
+              (ITE
+                 (ALt (V "_y_",N 0),Ass ("yabs",Mul (V "_y_",Mul (N -1,N 1))),
+                  Ass ("yabs",V "_y_")),
+               Seq
+                 (Ass ("xabs",Mod (V "xabs",N 6)),
+                  Seq
+                    (Ass ("yabs",Mod (V "yabs",N 6)),
+                     ITE
+                       (Conj
+                          (Not
+                             (Conj
+                                (Not (ALt (V "xabs",N 4)),
+                                 Not (Not (Not (AEq (V "xabs",N 4)))))),
+                           Conj
+                             (Not
+                                (Conj
+                                   (Not (ALt (V "yabs",N 4)),
+                                    Not (Not (Not (AEq (V "yabs",N 4)))))),
+                              Conj
+                                (Not (ALt (V "xabs",N 2)),
+                                 Not (ALt (V "yabs",N 2))))),
+                        Ass ("_result_",Mul (N -1,N 1)),
+                        ITE
+                          (Conj (AEq (V "xabs",N 0),AEq (V "yabs",N 0)),
+                           Ass ("_result_",N 4),
+                           ITE
+                             (Conj
+                                (AEq (V "xabs",V "yabs"),
+                                 Conj
+                                   (ALt (V "xabs",N 6),
+                                    Conj
+                                      (Not (AEq (V "xabs",N 2)),
+                                       Not (ALt (V "xabs",N 2))))),
+                              Ass ("_result_",N 3),
+                              ITE
+                                (Not
+                                   (Conj
+                                      (Not
+                                         (Conj
+                                            (AEq (V "xabs",N 2),
+                                             Not
+                                               (Conj
+                                                  (Not (AEq (V "yabs",N 2)),
+                                                   Not (AEq (V "yabs",N 5)))))),
+                                       Not
+                                         (Conj
+                                            (AEq (V "xabs",N 5),
+                                             AEq (V "yabs",N 2))))),
+                                 Ass ("_result_",N 2),
+                                 ITE
+                                   (Not
+                                      (Conj
+                                         (Not
+                                            (Conj
+                                               (AEq (V "xabs",N 0),
+                                                AEq (V "yabs",N 4))),
+                                          Not
+                                            (Not
+                                               (Conj
+                                                  (Not
+                                                     (Conj
+                                                        (AEq (V "xabs",N 1),
+                                                         Not
+                                                           (Conj
+                                                              (Not
+                                                                 (AEq
+                                                                    (V "yabs",
+                                                                     N 1)),
+                                                               Not
+                                                                 (AEq
+                                                                    (V "yabs",
+                                                                     N 5)))))),
+                                                   Not
+                                                     (Not
+                                                        (Conj
+                                                           (Not
+                                                              (Conj
+                                                                 (AEq
+                                                                    (V "xabs",
+                                                                     N 4),
+                                                                  Not
+                                                                    (Conj
+                                                                       (Not
+                                                                          (AEq
+                                                                             (V "yabs",
+                                                                              N 0)),
+                                                                        Not
+                                                                          (AEq
+                                                                             (V "yabs",
+                                                                              N 7)))))),
+                                                            Not
+                                                              (Not
+                                                                 (Conj
+                                                                    (Not
+                                                                       (Conj
+                                                                          (AEq
+                                                                             (V "xabs",
+                                                                              N 5),
+                                                                           AEq
+                                                                             (V "yabs",
+                                                                              N 1))),
+                                                                     Not
+                                                                       (Conj
+                                                                          (AEq
+                                                                             (V "xabs",
+                                                                              N 7),
+                                                                           AEq
+                                                                             (V "yabs",
+                                                                              N 4)))))))))))))),
+                                    Ass ("_result_",N 1),Ass ("_result_",N 0)))))))))))))

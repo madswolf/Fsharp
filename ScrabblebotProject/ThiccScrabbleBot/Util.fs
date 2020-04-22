@@ -1,35 +1,70 @@
 ﻿module Util
     open Ass7.ImpParser
     open Dictionary
-    open JParsec.TextParser
     open State
     open Eval
     open ScrabbleUtil
-    open JParsec
+    type Direction =                
+    | Right  
+    | Left
+    | Up
+    | Down
+
+    //false false = right
+    //true true = left
+    //false true = up
+    //true false = down
+    let establishDirection (move:(coord * char) list) : (bool * bool) = 
+        let move = List.map (fun x ->(fst x) ) move
+        match move with
+        |x::y::xs -> 
+             if (fst y - fst x) > 0 then (false,false)
+             else 
+                if (fst y - fst x) < 0 then (true,true)
+                else
+                    if(snd y - snd x) > 0 then (false,true)
+                    else (true,false)
+        | _ -> failwith "can't establish"
+
+    let changeCoordAccordingToHorisontalAndUp coord horisontal up =
+        if horisontal then (((fst coord) + up), snd coord) else (fst coord , (snd coord) + up)
     
-    
+    let addMoveToMap move map =
+        Map.add (fst move) (snd move) map
+
     //A function that traverses the given map horisontally or vertically positively or negatively depending on arguments
     let rec traverseUntillNull acc (map:Map<coord,char>) coord horisontal up =
         let result = map.TryFind coord
         if (result).IsSome 
         then 
-            let coord = if horisontal then (((fst coord) + up), snd coord) else (fst coord , (snd coord) + up)
+            let coord = changeCoordAccordingToHorisontalAndUp coord horisontal up
             traverseUntillNull (result.Value :: acc) map coord horisontal up
         else acc
+
+    let getPerpendicularWord map x horisontal =
+        
+        let coord = changeCoordAccordingToHorisontalAndUp  x (not horisontal) 1
+        let thing = traverseUntillNull [] map coord (not horisontal) 1 |> List.rev
+        let resultingword = (traverseUntillNull thing map  x (not horisontal) -1 )
+        (if not horisontal then resultingword else List.rev resultingword) |> List.fold (fun acc item -> acc + string item ) "" 
+         
+
     
+    //does not work right now ignores the one in the middle
     let rec traverseUntillLastLetterAndVerifyOrtogonalWords acc (map:Map<coord,char>) (move:(coord * char) list) (dict:Dictionary) (horisontal:bool) :bool =
         if (not acc)
         then acc
         else 
             match move with
             |x::y::xs -> 
-                let thing = traverseUntillNull [] map (fst x) (not horisontal) 1
-                let resultingWord = string (traverseUntillNull thing map (fst x) (not horisontal) -1)
+                let map = (addMoveToMap x map)
+                let resultingWord = getPerpendicularWord map (fst x) horisontal
                 let acc = isWord (resultingWord) dict
                 traverseUntillLastLetterAndVerifyOrtogonalWords acc map (y::xs) dict horisontal
             |x::xs -> 
-                let thing = traverseUntillNull [] map (fst x) (horisontal) 1
-                let resultingWord = string (traverseUntillNull thing map (fst x) (horisontal) -1)
+                let map = (addMoveToMap x map)
+                let resultingWord = getPerpendicularWord map (fst x) (not horisontal)
+
                 isWord (resultingWord) dict
             |_ -> acc
          
@@ -60,11 +95,6 @@
     
     let boardProgToBoardFun boardProg squares  : boardFun= 
       runTextParser stmParse boardProg |> 
-      (
-         function
-         |Success (x,_) -> x 
-         |_ -> failwith "oopps"
-      ) |>
       stmntToBoardFun
       <| squares
     
@@ -74,11 +104,6 @@
              Map.map (
                  fun key value -> 
                      runTextParser stmParse value |>
-                     (
-                         function
-                         |Success (x,_) -> x 
-                         |_ -> failwith "oopps"
-                     ) |>
                      stmntToSquareFun
              ) map
      ) squares

@@ -1,55 +1,41 @@
 ﻿module ThiccScrabbleBot.Tests3
-open System
 open Xunit
-open Util
-open System.IO
-open Dictionary
 open Ass7.ImpParser
+open System.IO
+open System.Threading
 
-let standardboard = "declare xabs;
-declare yabs;
-if (_x_ < 0) then {
-    xabs := _x_ * -1
+
+//naming is horrible and i love it
+let readLines (filePath:string) = seq {
+    use sr = new StreamReader (filePath)
+    while not sr.EndOfStream do
+        yield sr.ReadLine ()
 }
-else {
-    xabs := _x_
-};
-if (_y_ < 0) then {
-    yabs := _y_ * -1
-}
-else {
-    yabs := _y_
-};
-if ((xabs = 7 /\ (yabs = 0 \/ yabs = 7)) \/ (yabs = 7 /\ (xabs = 0 \/ xabs = 7))) then {
-    _result_ := 4
-}
-else {
-    if (xabs = yabs /\ xabs < 7 /\ xabs > 2) then {
-        _result_ := 3
-    }
-    else {
-        if ((xabs = 2 /\ (yabs = 2 \/ yabs = 6)) \/ (yabs = 2 /\ (xabs = 2 \/ xabs = 6))) then {
-            _result_ := 2
-        }
-        else {
-            if (((xabs = 0 /\ yabs = 4) \/ (xabs = 1 /\ (yabs = 1 \/ yabs = 5)) \/ (xabs = 4 /\ yabs = 7)) \/ ((yabs = 0 /\ xabs = 4) \/ (yabs = 1 /\ (xabs = 1 \/ xabs = 5)) \/ (yabs = 4 /\ xabs = 7))) then {
-                _result_ := 1
-            }
-            else {
-                if (xabs <= 7 /\ yabs <= 7) then {
-                    _result_ := 0
-                }
-                else {
-                    _result_ := -1
-                }
-            }
-        }
-    }
-}"
+
+let filepath string =
+    @"D:\code\Fsharp\ScrabblebotProject\ThiccTesting\Testfiles\" + string + @".txt"
+
+let testThingy boardName = 
+    let standardboard = readLines(filepath boardName) |> Seq.fold(fun acc item -> acc + item) ""
+    
+    let thing = File.CreateText(filepath (boardName + "Result"))
+    let board = (runTextParser stmParse standardboard)
+  
+    thing.Write(board)
+    thing.Dispose ()
+    let actual = readLines(filepath (boardName + "Result")) |> Seq.fold(fun acc item -> item + acc) ""
+    let expected = readLines(filepath (boardName + "Expected")) |> Seq.fold(fun acc item -> item + acc) ""
+    actual = expected
 
 [<Fact>]
-let traverseUntillLastLetterAndVerifyOrtogonalWords_given_board_with_hello_and_move_hello_returns_true() =
-    
-    let board = boardProgToBoardFun standardboard Map.empty
-    let thing = "boobs"
-    Assert.True(true)
+let StandardBoardParseTest() =
+    Assert.True(testThingy "StandardBoard")
+[<Fact>]
+let HoleBoardParseTest() =
+    Assert.True(testThingy "HoleBoard")
+[<Fact>]
+let InfiniteBoardParseTest() =
+    Assert.True(testThingy "InfiniteBoard")
+[<Fact>]
+let InfiniteHoleBoardParseTest() =
+    Assert.True(testThingy "InfiniteHoleBoard")

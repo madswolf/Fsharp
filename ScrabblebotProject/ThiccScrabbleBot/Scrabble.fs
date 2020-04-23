@@ -2,7 +2,7 @@ namespace ThiccScrabbleBot
 
 open ScrabbleUtil
 open ScrabbleUtil.ServerCommunication
-open Util
+open ValidityEngine
 
 open System.IO
 open DebugPrint
@@ -133,10 +133,8 @@ module Scrabble =
         let handSet = List.fold (fun acc (x, k) -> MultiSet.add x k acc) MultiSet.empty hand
 
         let dict = Dictionary.mkDict words
-        let squares = squaresOfProgToSquaresOfFun boardP.squares
-        let boardFun = boardProgToBoardFun boardP.prog Map.empty
-        let board = mkBoard boardFun boardP.usedSquare squares boardP.center Map.empty
-        printf "%A" boardFun
+        let board = boardToStateBoardWithMap boardP
+        
         fun () -> playGame cstream tiles (mkState playerNumber players playerTurn dict handSet board)
     
 

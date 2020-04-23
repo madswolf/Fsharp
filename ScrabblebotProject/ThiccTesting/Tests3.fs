@@ -2,7 +2,6 @@
 open Xunit
 open Ass7.ImpParser
 open System.IO
-open System.Threading
 
 
 //naming is horrible and i love it

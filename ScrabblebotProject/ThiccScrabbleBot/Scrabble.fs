@@ -3,7 +3,7 @@ namespace ThiccScrabbleBot
 open ScrabbleUtil
 open ScrabbleUtil.ServerCommunication
 open ValidityEngine
-
+open GenerationEngine
 open System.IO
 open DebugPrint
 
@@ -37,13 +37,13 @@ module Scrabble =
     open System.Threading
     open State
     
-    let playGame cstream pieces (st:state) =
+    let playGame cstream (st:state) =
         
-        let passedOrEquvalent (st:state) pid = mkState st.playerNumber st.players pid st.dictionary st.hand st.board
+        let passedOrEquvalent (st:state) pid = mkState st.tiles st.playerNumber st.players pid st.dictionary st.hand st.board
             
         let rec aux (st:state) =
             Thread.Sleep(5000) // only here to not confuse the pretty-printer. Remove later.
-            Print.printHand pieces (hand st)
+            Print.printHand st.tiles (hand st)
 
             let players = st.players
             let pp = st.previousPlayer
@@ -54,7 +54,8 @@ module Scrabble =
 
             if isPlayerTurn
             then
-                //calculate move and send 
+                let move = generateValidMove st
+                printfn "%A" (moveToString move)
                 // remove the force print when you move on from manual input (or when you have learnt the format)
                 forcePrint "Input move (format '(<x-coordinate> <y-coordinate> <piece id><character><point-value> )*', (check if updated) note the absence of state between the last inputs)\n\n"
                 let input =  System.Console.ReadLine()
@@ -75,13 +76,13 @@ module Scrabble =
 
                 let board = updateBoard st.board ms
 
-                let st' = mkState st.playerNumber st.players st.previousPlayer st.dictionary hand board
+                let st' = mkState st.tiles st.playerNumber st.players st.previousPlayer st.dictionary hand board
                 aux st'
             | RCM (CMPlayed (pid, ms, points)) ->
                 //update internal board and change previous player
 
                 let board = updateBoard st.board ms
-                let st' = mkState st.playerNumber st.players pid st.dictionary st.hand board
+                let st' = mkState st.tiles st.playerNumber st.players pid st.dictionary st.hand board
                 aux st'
             | RCM (CMPlayFailed (pid, ms)) ->
                 //update previous player
@@ -99,7 +100,7 @@ module Scrabble =
             | RCM (CMForfeit pid) -> 
                 //remove player from list of players
                 let players = List.filter (fun x -> x = pid) st.players
-                let st' = mkState st.playerNumber players st.previousPlayer st.dictionary st.hand st.board
+                let st' = mkState st.tiles st.playerNumber players st.previousPlayer st.dictionary st.hand st.board
                 aux st'
             | RCM a -> failwith (sprintf "not implmented: %A" a)
             | RGPE err -> printfn "Gameplay Error:\n%A" err; aux st
@@ -128,14 +129,14 @@ module Scrabble =
                       player turn = %d
                       hand =  %A
                       timeout = %A\n\n" numPlayers playerNumber playerTurn hand timeout)
-
+        
         let players = [1u..numPlayers]
         let handSet = List.fold (fun acc (x, k) -> MultiSet.add x k acc) MultiSet.empty hand
 
         let dict = Dictionary.mkDict words
         let board = boardToStateBoardWithMap boardP
         
-        fun () -> playGame cstream tiles (mkState playerNumber players playerTurn dict handSet board)
+        fun () -> playGame cstream (mkState tiles playerNumber players playerTurn dict handSet board)
     
 
         

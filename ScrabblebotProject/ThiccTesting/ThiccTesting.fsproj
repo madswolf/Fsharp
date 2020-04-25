@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="FindAllPrefixes.fs" />
+    <Compile Include="GenerationEngine.fs" />
     <Compile Include="isValidPlay.fs" />
     <Compile Include="IsContinuos.fs" />
     <Compile Include="IsHorisontal.fs" />

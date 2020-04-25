@@ -13,7 +13,8 @@
     <Compile Include="MultiSet.fs" />
     <Compile Include="Scrabble.fsi" />
     <Compile Include="State.fs" />
-    <Compile Include="Util.fs" />
+    <Compile Include="ValidityEngine.fs" />
+    <Compile Include="GenerationEngine.fs" />
     <Compile Include="Scrabble.fs" />
   </ItemGroup>
 

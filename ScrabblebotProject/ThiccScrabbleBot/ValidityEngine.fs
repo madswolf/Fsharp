@@ -148,3 +148,5 @@
 
     let boardToStateBoardWithMap (boardP:ScrabbleUtil.boardProg)= 
         boardToStateBoard boardP Map.empty
+
+    //let convertFromServerMoveToVerifyMove (move:move) : (coord * char) list=

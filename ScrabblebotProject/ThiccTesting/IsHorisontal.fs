@@ -15,7 +15,7 @@ let IsHorisonal_given_horisontal_hello_returns_true() =
 [<Fact>]
 let IsHorisonal_given_vertical_hello_returns_false() =
     
-    let move = [((0,1),'H');((0,0),'E');((0,2),'L');((0,3),'L');((0,4),'O')]
+    let move = [((0,0),'H');((0,-1),'E');((0,-2),'L');((0,-3),'L');((0,-4),'O')]
     let actual = isHorisontalMove move
     let expected = false
     Assert.Equal(expected, actual)

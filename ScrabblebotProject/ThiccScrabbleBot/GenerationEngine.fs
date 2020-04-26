@@ -10,11 +10,11 @@
     open MultiSet
     //returns a list of string * coord * bool where the strings are the prefixes, 
     //the coord is the coord of the last character, and the boolean is if it's horisontal or not
+
     let findPrefixes map dict =
        
         let isEndOfWord coord map horisontal =
-            let up = if horisontal then 1 else -1
-            let coord1 = changeCoordAccordingToHorisontalAndUp coord horisontal up
+            let coord1 = changeCoordAccordingToHorisontalAndUp coord horisontal 1
             ((Map.tryFind coord1 map).IsSome)
 
         let findAndAddPrefix (coord:coord) map horisontal acc= 
@@ -45,7 +45,18 @@
             state.hand |>
             MultiSet.toList |>
             List.fold(fun acc item -> Set.add ((item, Map.find item state.tiles)) acc) Set.empty
-        let prefixes = findPrefixes map dict
+        
+        let isStartingMove = map.Count = 0 
+        let prefixes = 
+            if isStartingMove
+            //if you have the starting hand
+            //add more ending locations for this, and check if the move is over the center 
+            then 
+                [
+                (("",changeCoordAccordingToHorisontalAndUp state.board.center true -1),true);
+                (("",changeCoordAccordingToHorisontalAndUp state.board.center false -1),false)
+                ]
+            else findPrefixes map dict
         //prefix + hand 
 
         //includes destructive updates I.E
@@ -67,27 +78,34 @@
             let word = (fst (fst prefix))
             let horisontal = snd prefix
             let coord = snd (fst prefix)
+            
             let attachCoordsTomove (move:(uint32 *(char * int)) list) : move=
                 let coordChanger = 
                     fun upamount -> 
                         let coord = snd (fst prefix)
                         changeCoordAccordingToHorisontalAndUp coord horisontal upamount
                 let coords = 
-                    [1.. move.Length] |>
+                    [1 ..  move.Length] |>
                     List.map (coordChanger)
                 List.zip coords move
 
+            let isMoveOverCenter move =
+                List.fold (fun acc item -> if acc then acc else fst item = state.board.center) false move
+
             let isMoveValid move =
-                attachCoordsTomove (move |> List.rev) |>
-                List.map (fun item -> (fst item, fst(snd(snd item))))|> 
-                (fun x -> isValidPlay x state.board dict)
-               
+                let moveWithCoords = 
+                    attachCoordsTomove (move |> List.rev) |>
+                    List.map (fun item -> (fst item, fst(snd(snd item))))
+                let isValid = isValidPlay moveWithCoords state.board dict
+                let moveCenter = (if isStartingMove then (isMoveOverCenter moveWithCoords) else true)
+                isValid && moveCenter
+            let dict = 
+                if word.Length <> 0 
+                then 
+                    (Dictionary.tryFindString word dict).Value
+                else dict
 
             let rec aux (move: (uint32 *(char * int)) list) (word:string) (hand:Set<uint32 * tile>) dict : move = 
-                if isWordDict dict && isMoveValid move
-                then 
-                    attachCoordsTomove (move |> List.rev)
-                else
                     //try all sets
                      Set.fold (
                          fun acc tile -> 
@@ -107,7 +125,12 @@
                                              then 
                                                 let newMove = ((fst tile),(fst tileValue,snd tileValue)) :: move
                                                 let newHand = (Set.remove ((fst tile),(Set.add (tileValue) Set.empty)) hand)
-                                                aux newMove (word + (string char)) newHand finding.Value
+                                                let dict = finding.Value
+                                                if isWordDict dict && isMoveValid newMove
+                                                then 
+                                                    attachCoordsTomove (newMove |> List.rev)
+                                                else
+                                                    aux newMove (word + (string char)) newHand dict
                                              //if not
                                              else 
                                                  acc

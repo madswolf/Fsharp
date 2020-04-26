@@ -249,18 +249,18 @@
 
     type coord = int * int
 
-    type boardFun = coord -> Map<int,squareFun> option
+    type boardFun = coord -> int
 
     let stmntToBoardFun stm (squares:Map<int,Map<int,squareFun>>): boardFun = 
         fun (x,y) ->
             let state = mkState [("_x_", x);("_y_", y);("_result_",0)] [] ["_x_";"_y_";"_result_"] 
-            (stmntEval2 stm)>>>= (lookup "_result_")>>=(fun id -> ret (squares.TryFind id)) |> evalSM state |>
+            (stmntEval2 stm)>>>= (lookup "_result_")|> evalSM state |>
             function 
             |Success v -> v
             |_ -> failwith "uwu"
 
             
-    let stmntToBoardFunAlt stm (squares:Map<int,Map<int,squareFun>>) : boardFun =
+    (*let stmntToBoardFunAlt stm (squares:Map<int,Map<int,squareFun>>) : boardFun =
         fun (x,y)->
             let state = mkState [("_x_", x);("_y_", y);("_result_",0)] [] ["_x_";"_y_";"_result_"]
             prog{
@@ -270,7 +270,7 @@
             } |> evalSM state |>
             function 
             |Success v -> v
-            |_ -> failwith "uwu"
+            |_ -> failwith "uwu"*)
 
     (*type board = {
         center        : coord

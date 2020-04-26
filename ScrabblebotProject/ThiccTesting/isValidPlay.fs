@@ -53,7 +53,7 @@ let isValidPlay_given_horisontal_hello_skewed_and_board_nothing_returns_false() 
 let isValidPlay_given_vertical_hello_and_board_nothing_returns_true() =
     
     let board = boardWithoutBoardState Map.empty
-    let move = [((0,0),'H');((0,-1),'E');((0,-2),'L');((0,-3),'L');((0,-4),'O')]
+    let move = [((0,0),'H');((0,1),'E');((0,2),'L');((0,3),'L');((0,4),'O')]
 
     let actual = isValidPlay move board dict
     let expected = true
@@ -63,7 +63,7 @@ let isValidPlay_given_vertical_hello_and_board_nothing_returns_true() =
 let isValidPlay_given_vertical_he_SPACE_lo_and_board_nothing_returns_false() =
     
     let board = boardWithoutBoardState Map.empty
-    let move = [((0,0),'H');((0,1),'E');((0,3),'L');((0,4),'O')]
+    let move = [((0,0),'H');((0,-1),'E');((0,-3),'L');((0,-4),'O')]
 
     let actual = isValidPlay move board dict
     let expected = false
@@ -73,11 +73,25 @@ let isValidPlay_given_vertical_he_SPACE_lo_and_board_nothing_returns_false() =
 let isValidPlay_given_horisontal_he_SPACE_lo_skewed_and_board_nothing_returns_false() =
     
     let board = boardWithoutBoardState Map.empty
-    let move = [((0,0),'H');((0,1),'E');((0,2),'L');((0,3),'L');((1,4),'O')]
+    let move = [((0,0),'H');((0,-1),'E');((0,-2),'L');((0,-3),'L');((1,-4),'O')]
 
     let actual = isValidPlay move board dict
     let expected = false
     Assert.Equal(expected, actual)
+
+[<Fact>]
+let isValidPlay_given_vertical_hello_and_board_with_aaa_returns_false() =
+    
+    let things = [('A',(1,2));('A',(0,2))]
+    let map = List.fold(fun acc item -> Map.add (snd item) (fst item) acc) Map.empty things
+
+    let board = boardWithoutBoardState map
+    let move = [((0,0),'H');((0,1),'E');((0,2),'L');((0,3),'L');((0,4),'O')]
+
+    let actual = isValidPlay move board dict
+    let expected = false
+    Assert.Equal(expected, actual)
+
 
 
     (*

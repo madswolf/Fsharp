@@ -39,29 +39,26 @@ module Scrabble =
     
     let playGame cstream (st:state) =
         
-        let passedOrEquvalent (st:state) pid = mkState st.tiles st.playerNumber st.players pid st.dictionary st.hand st.board
+        let passedOrEquvalent (st:state) = mkState st.tiles (st.movesUntillTurn - 1u) st.numberOfPlayers st.dictionary st.hand st.board
             
         let rec aux (st:state) =
-            Thread.Sleep(5000) // only here to not confuse the pretty-printer. Remove later.
+            //Thread.Sleep(5000) // only here to not confuse the pretty-printer. Remove later.
             Print.printHand st.tiles (hand st)
 
-            let players = st.players
-            let pp = st.previousPlayer
-            let pn = st.playerNumber
+            let state = st
 
-            let isPlayerTurn = 
-                snd (List.fold (fun acc item -> if fst acc = pp && item = pn then (fst acc, true) else (item,false)) (0u,false) players)
-
-            if isPlayerTurn
+            if st.movesUntillTurn = 0u
             then
                 let move = generateValidMove st
-                printfn "%A" (moveToString move)
-                // remove the force print when you move on from manual input (or when you have learnt the format)
-                forcePrint "Input move (format '(<x-coordinate> <y-coordinate> <piece id><character><point-value> )*', (check if updated) note the absence of state between the last inputs)\n\n"
                 let input =  System.Console.ReadLine()
-                let move = RegEx.parseMove input
-                debugPrint (sprintf "Player %d -> Server:\n%A\n" (playerNumber st) move) // keep the debug lines. They are useful.
-                send cstream (SMPlay move)
+                let moveString = moveToString move
+                debugPrint (sprintf "Player %d -> Server:\n%A\n" (playerNumber st) (moveString)) // keep the debug lines. They are useful.
+                if move = [] 
+                then 
+                    printfn "changed hand"
+                    send cstream (SMChange (MultiSet.toList st.hand))
+                else 
+                    send cstream (SMPlay move)
 
             //wait for next message from server and update state depending on response
             let msg = recv cstream
@@ -76,31 +73,34 @@ module Scrabble =
 
                 let board = updateBoard st.board ms
 
-                let st' = mkState st.tiles st.playerNumber st.players st.previousPlayer st.dictionary hand board
+                let st' = mkState st.tiles (st.numberOfPlayers - 1u ) st.numberOfPlayers st.dictionary hand board
+                aux st'
+            | RCM(CMChangeSuccess (newPieces)) ->
+                let hand = updateHand MultiSet.empty [] newPieces
+                let st' = mkState st.tiles st.movesUntillTurn st.numberOfPlayers st.dictionary hand st.board
                 aux st'
             | RCM (CMPlayed (pid, ms, points)) ->
                 //update internal board and change previous player
 
                 let board = updateBoard st.board ms
-                let st' = mkState st.tiles st.playerNumber st.players pid st.dictionary st.hand board
+                let st' = mkState st.tiles (st.movesUntillTurn - 1u) st.numberOfPlayers st.dictionary st.hand board
                 aux st'
             | RCM (CMPlayFailed (pid, ms)) ->
                 //update previous player
-                aux (passedOrEquvalent st pid)
+                aux (passedOrEquvalent st)
             |RCM (CMPassed pid) -> 
                 //update previous player
-                aux (passedOrEquvalent st pid)
+                aux (passedOrEquvalent st)
             |RCM (CMChange (pid, numTiles)) -> 
                 //update previous player
-                aux (passedOrEquvalent st pid)
+                aux (passedOrEquvalent st)
             |RCM (CMTimeout pid) ->
                 //update previous player
-                aux (passedOrEquvalent st pid)
+                aux (passedOrEquvalent st)
             | RCM (CMGameOver _) -> () // end the misery
             | RCM (CMForfeit pid) -> 
                 //remove player from list of players
-                let players = List.filter (fun x -> x = pid) st.players
-                let st' = mkState st.tiles st.playerNumber players st.previousPlayer st.dictionary st.hand st.board
+                let st' = mkState st.tiles (st.movesUntillTurn - 1u) (st.numberOfPlayers-1u) st.dictionary st.hand st.board
                 aux st'
             | RCM a -> failwith (sprintf "not implmented: %A" a)
             | RGPE err -> printfn "Gameplay Error:\n%A" err; aux st
@@ -130,13 +130,12 @@ module Scrabble =
                       hand =  %A
                       timeout = %A\n\n" numPlayers playerNumber playerTurn hand timeout)
         
-        let players = [1u..numPlayers]
         let handSet = List.fold (fun acc (x, k) -> MultiSet.add x k acc) MultiSet.empty hand
 
         let dict = Dictionary.mkDict words
         let board = boardToStateBoardWithMap boardP
-        
-        fun () -> playGame cstream (mkState tiles playerNumber players playerTurn dict handSet board)
+        let movesUntilYourTurn = ((numPlayers - ( playerTurn -  playerNumber)) % numPlayers) 
+        fun () -> playGame cstream (mkState tiles movesUntilYourTurn numPlayers  dict handSet board)
     
 
         

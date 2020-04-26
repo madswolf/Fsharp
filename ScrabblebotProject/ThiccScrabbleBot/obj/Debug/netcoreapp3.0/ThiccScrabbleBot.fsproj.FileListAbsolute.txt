@@ -1,4 +1,3 @@
-D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\obj\Debug\netcoreapp3.0\ThiccScrabbleBot.fsprojAssemblyReference.cache
 D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\obj\Debug\netcoreapp3.0\ThiccScrabbleBot.AssemblyInfoInputs.cache
 D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\obj\Debug\netcoreapp3.0\ThiccScrabbleBot.AssemblyInfo.fs
 D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\bin\Debug\netcoreapp3.0\ThiccScrabbleBot.deps.json
@@ -9,3 +8,4 @@ D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\bin\Debug\netcoreapp3.0\Scrab
 D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\obj\Debug\netcoreapp3.0\ThiccScrabbleBot.fsproj.CopyComplete
 D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\obj\Debug\netcoreapp3.0\ThiccScrabbleBot.dll
 D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\obj\Debug\netcoreapp3.0\ThiccScrabbleBot.pdb
+D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\obj\Debug\netcoreapp3.0\ThiccScrabbleBot.fsprojAssemblyReference.cache

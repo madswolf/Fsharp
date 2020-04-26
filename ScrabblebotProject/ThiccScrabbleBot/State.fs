@@ -38,16 +38,15 @@
             mkBoard board.boardFun board.usedSquare board.squares board.center
 
     type state = {
-        playerNumber  : uint32
-        players       : uint32 list
-        previousPlayer: uint32
+        movesUntillTurn  : uint32
+        numberOfPlayers : uint32
         dictionary    : Dictionary
         hand          : MultiSet.MultiSet<uint32>
         board         : board
         tiles         : Map<uint32, tile>
     }
 
-    let mkState tiles pn players pp dict h board = {tiles = tiles; playerNumber = pn; players = players; previousPlayer = pp; dictionary = dict; hand = h; board = board}
+    let mkState tiles moves playerNum dict h board = {tiles = tiles; movesUntillTurn = moves; numberOfPlayers = playerNum; dictionary = dict; hand = h; board = board}
 
     let newState pn hand = mkState pn hand
 
@@ -56,5 +55,5 @@
         List.fold (fun acc item -> MultiSet.removeSingle item acc) hand |>
         MultiSet.sum (List.fold (fun acc (x, k) -> MultiSet.add x k acc) MultiSet.empty newPieces) 
 
-    let playerNumber st  = st.playerNumber
+    let playerNumber st  = st.movesUntillTurn
     let hand st          = st.hand

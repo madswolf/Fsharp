@@ -29,7 +29,7 @@ let main argv =
     let seed = None
     let port = 13001
 
-    let players = [("Oxyphenbutazone", Oxyphenbutazone.Startup.startGame); ("thicc" , ThiccScrabbleBot.Scrabble.startGame)]
+    let players = [("jesper",Oxyphenbutazone.Startup.startGame);("thicc" , ThiccScrabbleBot.Scrabble.startGame)]
  
     do ScrabbleServer.Comm.startGame
           board alphabet dictionary handSize timeout tiles seed port players

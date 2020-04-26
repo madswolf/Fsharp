@@ -34,7 +34,7 @@ let rec isContinuable (word:string) dict =
     else
         if (word.Length = 0) then false 
         else 
-            if((map.TryFind word.[0]).IsNone) then failwith "isNotWord"
+            if((map.TryFind word.[0]).IsNone) then false
             else isContinuable word.[1..word.Length-1] map.[word.[0]]
 
 let tryFind char dict =

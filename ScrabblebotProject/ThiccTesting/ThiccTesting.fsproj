@@ -8,6 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="File1.fs" />
+    <Compile Include="UpdateBoard.fs" />
+    <Compile Include="UpdateHand.fs" />
     <Compile Include="FindAllPrefixes.fs" />
     <Compile Include="GenerationEngine.fs" />
     <Compile Include="isValidPlay.fs" />

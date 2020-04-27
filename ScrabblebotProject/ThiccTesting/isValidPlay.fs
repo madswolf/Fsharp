@@ -25,7 +25,7 @@ let isValidPlay_given_horisontal_hello_and_board_nothing_returns_true() =
     let board = boardWithoutBoardState Map.empty
     let move = [((0,0),'H');((1,0),'E');((2,0),'L');((3,0),'L');((4,0),'O')]
 
-    let actual = isValidPlay move board dict
+    let actual = isValidPlay move board dict 1
     let expected = true
     Assert.Equal(expected, actual)
 
@@ -35,7 +35,7 @@ let isValidPlay_given_horisontal_he_SPACE_lo_and_board_nothing_returns_false() =
     let board = boardWithoutBoardState Map.empty
     let move = [((0,0),'H');((1,0),'E');((3,0),'L');((4,0),'O')]
 
-    let actual = isValidPlay move board dict
+    let actual = isValidPlay move board dict 1
     let expected = false
     Assert.Equal(expected, actual)
 
@@ -45,7 +45,7 @@ let isValidPlay_given_horisontal_hello_skewed_and_board_nothing_returns_false() 
     let board = boardWithoutBoardState Map.empty
     let move = [((0,0),'H');((1,0),'E');((2,0),'L');((3,0),'L');((4,1),'O')]
 
-    let actual = isValidPlay move board dict
+    let actual = isValidPlay move board dict 1
     let expected = false
     Assert.Equal(expected, actual)
 
@@ -55,7 +55,7 @@ let isValidPlay_given_vertical_hello_and_board_nothing_returns_true() =
     let board = boardWithoutBoardState Map.empty
     let move = [((0,0),'H');((0,1),'E');((0,2),'L');((0,3),'L');((0,4),'O')]
 
-    let actual = isValidPlay move board dict
+    let actual = isValidPlay move board dict 1
     let expected = true
     Assert.Equal(expected, actual)
 
@@ -65,7 +65,7 @@ let isValidPlay_given_vertical_he_SPACE_lo_and_board_nothing_returns_false() =
     let board = boardWithoutBoardState Map.empty
     let move = [((0,0),'H');((0,-1),'E');((0,-3),'L');((0,-4),'O')]
 
-    let actual = isValidPlay move board dict
+    let actual = isValidPlay move board dict 1
     let expected = false
     Assert.Equal(expected, actual)
 
@@ -75,7 +75,7 @@ let isValidPlay_given_horisontal_he_SPACE_lo_skewed_and_board_nothing_returns_fa
     let board = boardWithoutBoardState Map.empty
     let move = [((0,0),'H');((0,-1),'E');((0,-2),'L');((0,-3),'L');((1,-4),'O')]
 
-    let actual = isValidPlay move board dict
+    let actual = isValidPlay move board dict 1
     let expected = false
     Assert.Equal(expected, actual)
 
@@ -88,7 +88,7 @@ let isValidPlay_given_vertical_hello_and_board_with_aaa_returns_false() =
     let board = boardWithoutBoardState map
     let move = [((0,0),'H');((0,1),'E');((0,2),'L');((0,3),'L');((0,4),'O')]
 
-    let actual = isValidPlay move board dict
+    let actual = isValidPlay move board dict 1
     let expected = false
     Assert.Equal(expected, actual)
 

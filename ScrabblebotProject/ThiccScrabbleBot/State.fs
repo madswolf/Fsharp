@@ -41,12 +41,13 @@
         movesUntillTurn  : uint32
         numberOfPlayers : uint32
         dictionary    : Dictionary
+        reverseDictionary : Dictionary
         hand          : MultiSet.MultiSet<uint32>
         board         : board
         tiles         : Map<uint32, tile>
     }
 
-    let mkState tiles moves playerNum dict h board = {tiles = tiles; movesUntillTurn = moves; numberOfPlayers = playerNum; dictionary = dict; hand = h; board = board}
+    let mkState tiles moves playerNum dict revDict h board = {tiles = tiles; movesUntillTurn = moves; numberOfPlayers = playerNum; dictionary = dict; reverseDictionary = revDict; hand = h; board = board}
 
     let newState pn hand = mkState pn hand
 

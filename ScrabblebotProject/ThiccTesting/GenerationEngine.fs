@@ -22,6 +22,45 @@ let dict =
     readLines "D:\code\Fsharp\ScrabblebotProject\EnglishDictionary.txt" |>
     Seq.fold (fun acc x ->  insert x acc) (empty " ")
 
+let reverse (input:string) = input |> Seq.rev |> System.String.Concat
+
+let reverseDict =
+    readLines "D:\code\Fsharp\ScrabblebotProject\EnglishDictionary.txt" |>
+    Seq.map reverse |> 
+    Seq.fold (fun acc x ->  insert x acc) (empty " ")
+
+let wildcard =
+    (0u ,[
+    ('A',0);
+    ('B',0);
+    ('C',0);
+    ('D',0);
+    ('E',0);
+    ('F',0);
+    ('G',0);
+    ('H',0);
+    ('I',0);
+    ('J',0);
+    ('K',0);
+    ('L',0);
+    ('M',0);
+    ('N',0);
+    ('O',0);
+    ('P',0);
+    ('Q',0);
+    ('R',0);
+    ('S',0);
+    ('T',0);
+    ('U',0);
+    ('A',0);
+    ('V',0);
+    ('W',0);
+    ('X',0);
+    ('Y',0);
+    ('Z',0);
+    ] |>
+    List.fold (fun acc item -> Set.add item acc) Set.empty) 
+
 let tileMap : Map<uint32,tile>=
     [
     (1u,('A',1));
@@ -51,7 +90,8 @@ let tileMap : Map<uint32,tile>=
     (25u,('Y',4));
     (26u,('Z',10));
     ] |>
-    List.fold (fun map x-> Map.add (fst x) (Set.add (snd x) Set.empty) map) Map.empty
+    List.fold (fun map x-> Map.add (fst x) (Set.add (snd x) Set.empty) map) Map.empty |> 
+    Map.add (fst wildcard) (snd wildcard)
 
 let squares = 
     (StandardBoard.standardBoard ()).squares |>
@@ -65,7 +105,7 @@ let center = (StandardBoard.standardBoard ()).center
 
 let stateWithoutBoardMapOrhand hand boardMap=
     mkBoard boardFun 0 squares center boardMap |>
-    mkState tileMap 0u 0u dict hand 
+    mkState tileMap 0u 0u dict reverseDict hand 
 [<Fact>]
 let generateAWordFromState_given_board_with_hel_and_hand_LOL__finds_move_LO () =
     let things = [('H',(0,0));('E',(1,0));('L',(2,0))]
@@ -219,5 +259,69 @@ let generateAWordFromState_given_realgame5__finds_move_LO () =
         List.fold (fun multiset item -> MultiSet.addSingle item multiset) MultiSet.empty
     let state = stateWithoutBoardMapOrhand hand map
     let actual = generateValidMove state
-    let expected = [((7, 7), (19u, ('S', 1)))]
+    let expected = [((5, 2), (7u, ('G', 2)))]
     List.mapi (fun index item -> Assert.Equal(item,actual.[index])) expected
+
+
+[<Fact>]
+let generateAWordFromState_given_realgame6__finds_move_LO () =
+    let things = 
+        [
+        ('D',(0,0));
+        ('E',(1,0));
+        ('B',(2,0));
+        ('T',(3,0));
+        ('I',(0,1));
+        ('F',(0,2));
+        ('D',(1,1));
+        ('I',(1,2));
+        ('T',(1,3));
+        ('I',(1,4));
+        ('N',(1,5));
+        ('G',(1,6));
+        ('N',(2,2));
+        ('K',(3,2));
+        ('S',(4,2));
+        ('O',(3,3));
+        ('R',(3,4));
+        ('A',(3,5));
+        ('T',(3,6));
+        ('O',(6,7));
+        ('I',(4,3));
+        ('L',(5,3));
+        ('S',(6,3));
+        ('U',(6,2));
+        ('P',(6,1));
+        ('P',(7,2));
+        ('A',(7,1));
+        ('L',(7,0));
+        ('D',(4,5));
+        ('O',(5,5));
+        ('R',(6,5));
+        ('N',(7,5));
+        ('A',(4,6));
+        ('N',(5,6));
+        ('L',(4,7));
+        ('E',(5,7));
+        ('U',(6,7));
+        ('D',(7,7));        
+        ('O',(7,6));
+        ]
+    let map = List.fold(fun acc item -> Map.add (snd item) (fst item) acc) Map.empty things
+    let hand =
+        [5u;10u;15u;22u;24u] |> 
+        List.fold (fun multiset item -> MultiSet.addSingle item multiset) MultiSet.empty
+    let state = stateWithoutBoardMapOrhand hand map
+    let actual = generateValidMove state
+    let expected = [((3, -1), (5u, ('E', 1)))]
+    List.mapi (fun index item -> Assert.Equal(item,actual.[index])) expected
+
+[<Fact>]
+let generateAWordFromState_given_A_and_wildcard_forced_use() =
+    let hand =
+        [0u] |> 
+        List.fold (fun multiset item -> MultiSet.addSingle item multiset) MultiSet.empty
+    let state = stateWithoutBoardMapOrhand hand Map.empty
+    let actual = generateValidMove state
+    Assert.True(actual.IsEmpty)
+    

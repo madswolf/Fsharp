@@ -39,7 +39,7 @@ module Scrabble =
     
     let playGame cstream (st:state) =
         
-        let passedOrEquvalent (st:state) = mkState st.tiles (st.movesUntillTurn - 1u) st.numberOfPlayers st.dictionary st.hand st.board
+        let passedOrEquvalent (st:state) = mkState st.tiles (st.movesUntillTurn - 1u) st.numberOfPlayers st.dictionary st.reverseDictionary st.hand st.board
             
         let rec aux (st:state) =
             //Thread.Sleep(5000) // only here to not confuse the pretty-printer. Remove later.
@@ -73,17 +73,17 @@ module Scrabble =
 
                 let board = updateBoard st.board ms
 
-                let st' = mkState st.tiles (st.numberOfPlayers - 1u ) st.numberOfPlayers st.dictionary hand board
+                let st' = mkState st.tiles (st.numberOfPlayers - 1u ) st.numberOfPlayers st.dictionary st.reverseDictionary hand board
                 aux st'
             | RCM(CMChangeSuccess (newPieces)) ->
                 let hand = updateHand MultiSet.empty [] newPieces
-                let st' = mkState st.tiles st.movesUntillTurn st.numberOfPlayers st.dictionary hand st.board
+                let st' = mkState st.tiles st.movesUntillTurn st.numberOfPlayers st.dictionary st.reverseDictionary hand st.board
                 aux st'
             | RCM (CMPlayed (pid, ms, points)) ->
                 //update internal board and change previous player
 
                 let board = updateBoard st.board ms
-                let st' = mkState st.tiles (st.movesUntillTurn - 1u) st.numberOfPlayers st.dictionary st.hand board
+                let st' = mkState st.tiles (st.movesUntillTurn - 1u) st.numberOfPlayers st.dictionary st.reverseDictionary st.hand board
                 aux st'
             | RCM (CMPlayFailed (pid, ms)) ->
                 //update previous player
@@ -100,7 +100,7 @@ module Scrabble =
             | RCM (CMGameOver _) -> () // end the misery
             | RCM (CMForfeit pid) -> 
                 //remove player from list of players
-                let st' = mkState st.tiles (st.movesUntillTurn - 1u) (st.numberOfPlayers-1u) st.dictionary st.hand st.board
+                let st' = mkState st.tiles (st.movesUntillTurn - 1u) (st.numberOfPlayers-1u) st.dictionary st.reverseDictionary st.hand st.board
                 aux st'
             | RCM a -> failwith (sprintf "not implmented: %A" a)
             | RGPE err -> printfn "Gameplay Error:\n%A" err; aux st
@@ -133,9 +133,11 @@ module Scrabble =
         let handSet = List.fold (fun acc (x, k) -> MultiSet.add x k acc) MultiSet.empty hand
 
         let dict = Dictionary.mkDict words
+        let reverse (input:string) = input |> Seq.rev |> System.String.Concat
+        let revDict = List.map (reverse) words |> Dictionary.mkDict
         let board = boardToStateBoardWithMap boardP
         let movesUntilYourTurn = ((numPlayers - ( playerTurn -  playerNumber)) % numPlayers) 
-        fun () -> playGame cstream (mkState tiles movesUntilYourTurn numPlayers  dict handSet board)
+        fun () -> playGame cstream (mkState tiles movesUntilYourTurn numPlayers  dict revDict handSet board)
     
 
         

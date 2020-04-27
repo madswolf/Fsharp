@@ -20,32 +20,32 @@
             traverseUntillNull (result.Value :: acc) map coord horisontal up
         else List.rev acc
 
-    let getPerpendicularWord map x horisontal =
+    let getPerpendicularWord map x horisontal up =
         //get letters to the right/below of center
-        let coord = changeCoordAccordingToHorisontalAndUp  x (not horisontal) 1
-        let right = traverseUntillNull [] map coord (not horisontal) 1 
+        let coord = changeCoordAccordingToHorisontalAndUp  x (not horisontal) (1 * up)
+        let right = traverseUntillNull [] map coord (not horisontal) (1 * up)
         //get letters from center to left/above 
-        let left = (traverseUntillNull [] map  x (not horisontal) -1) |> List.rev
+        let left = (traverseUntillNull [] map  x (not horisontal) (-1 * up)) |> List.rev
         let resultingword = left @ right 
         (resultingword) |> List.fold (fun acc item -> acc + string item ) "" 
          
 
     
     //does not work right now ignores the one in the middle
-    let rec traverseUntillLastLetterAndVerifyOrtogonalWords acc (map:Map<coord,char>) (move:(coord * char) list) (dict:Dictionary) (horisontal:bool) :bool =
+    let rec traverseUntillLastLetterAndVerifyOrtogonalWords acc (map:Map<coord,char>) (move:(coord * char) list) (dict:Dictionary) (horisontal:bool) up:bool =
         if (not acc)
         then acc
         else 
             match move with
             |x::y::xs -> 
                 let map = (addMoveToMap x map)
-                let resultingWord = getPerpendicularWord map (fst x) horisontal
+                let resultingWord = getPerpendicularWord map (fst x) horisontal up
                 let acc = isWord (resultingWord) dict
-                traverseUntillLastLetterAndVerifyOrtogonalWords acc map (y::xs) dict horisontal
+                traverseUntillLastLetterAndVerifyOrtogonalWords acc map (y::xs) dict horisontal up
             |x::xs -> 
                 let map = (addMoveToMap x map)
-                let perpendicularWord = getPerpendicularWord map (fst x) horisontal
-                let resultingWord = getPerpendicularWord map (fst x) (not horisontal)
+                let perpendicularWord = getPerpendicularWord map (fst x) horisontal up
+                let resultingWord = getPerpendicularWord map (fst x) (not horisontal) up
 
                 (isWord resultingWord dict) && (isWord perpendicularWord dict)
             |_ -> acc
@@ -87,7 +87,7 @@
         ) (true,fst move.[1]) move |>
         fst
     //            let move = List.map (fun x -> (fst x,fst (snd (snd x)))) move
-    let isValidPlay (move:(coord * char) list) (board:board) dict : bool =
+    let isValidPlay (move:(coord * char) list) (board:board) dict up: bool =
         //check if coords are not in holes
         let map = board.boardMap
         let boardFun = board.boardFun
@@ -121,7 +121,7 @@
         then 
             if (not overlapsWithExistingTiles) && (not includesHoles)
             then
-                traverseUntillLastLetterAndVerifyOrtogonalWords true board.boardMap move dict true
+                traverseUntillLastLetterAndVerifyOrtogonalWords true board.boardMap move dict true up
             else false
         else
             let horisontal = isHorisontalMove move
@@ -132,7 +132,7 @@
             //check for changed words by move
             //if hori then only check horisontally on the last tile and vice versa
             //for each tile check the ortogonal directions of the placement direction and verify that it creates valid words
-                traverseUntillLastLetterAndVerifyOrtogonalWords true board.boardMap move dict horisontal
+                traverseUntillLastLetterAndVerifyOrtogonalWords true board.boardMap move dict horisontal up
             else 
                 false
     

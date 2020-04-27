@@ -53,7 +53,7 @@ module Scrabble =
 
             if st.movesUntillTurn = 0u
             then
-                let move = generateValidMove st
+                let move = generateMostCashMoneyMove st
                 //let input =  System.Console.ReadLine()
                 let moveString = moveToString move
                 debugPrint (sprintf "Player %d -> Server:\n%A\n" (playerNumber st) (moveString)) // keep the debug lines. They are useful.

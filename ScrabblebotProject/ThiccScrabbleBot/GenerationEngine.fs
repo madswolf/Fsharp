@@ -33,6 +33,100 @@
         Map.fold (fun acc key _ -> tryFindHoriVerti acc key map ) [] map
 
 
+    let generateAllValidMoves (state:state) : move list=
+
+        let map = state.board.boardMap
+        let dict = state.dictionary
+        let revDict = state.reverseDictionary
+        let up = 1
+        let negUp = -1
+        let hand = 
+            state.hand |>
+            MultiSet.toList |>
+            List.fold(fun acc item -> Set.add ((item, Map.find item state.tiles)) acc) Set.empty
+        
+        let isStartingMove = map.Count = 0 
+        let prefixes = 
+            if isStartingMove
+            //if you have the starting hand
+            then 
+                [
+                (("",changeCoordAccordingToHorisontalAndUp state.board.center true negUp),true);
+                (("",changeCoordAccordingToHorisontalAndUp state.board.center false negUp),false)
+                ]
+            else findPrefixes map dict up
+        let suffixes = 
+            if isStartingMove
+            then 
+                [
+                (("",changeCoordAccordingToHorisontalAndUp state.board.center true up),true);
+                (("",changeCoordAccordingToHorisontalAndUp state.board.center false up),false)
+                ]
+            else
+                findPrefixes map revDict negUp
+        
+        let attemptAllCombinations  (acc:move list) (prefix:((string * coord) * bool)) (hand:Set<uint32 * tile>) dict up : move list =     
+
+            let word = (fst (fst prefix))
+            let horisontal = snd prefix
+
+            let coord = snd(fst prefix )
+            
+            let coordChanger = 
+                fun coord -> 
+                    changeCoordAccordingToHorisontalAndUp coord horisontal up
+
+            let isMoveOverCenter move =
+                List.fold (fun acc item -> if acc then acc else fst item = state.board.center) false move
+
+            let isMoveValid move up =
+                let isValid = isValidPlay move state.board dict horisontal up
+                let moveCenter = (if isStartingMove then (isMoveOverCenter move) else true)
+                isValid && moveCenter
+
+            let dict = 
+                if word.Length <> 0 
+                then 
+                    (Dictionary.tryFindString word dict).Value
+                else dict
+
+            let rec aux (acc:move list) (move:move) (word:string) (hand:Set<uint32 * tile>) dict coord: move list= 
+                //try all sets
+                 Set.fold (fun acc tile -> 
+                    //try all chars in set
+                    Set.fold (fun acc tileValue -> 
+                        let tileAtCoord = Map.tryFind coord map
+                        let finding = Dictionary.tryFind (fst tileValue) dict
+                        if finding.IsSome && tileAtCoord.IsNone
+                        then 
+                           let newMove = (coord, ((fst tile),(fst tileValue,snd tileValue))) :: move
+                           let newHand = (Set.remove ((fst tile),snd tile) hand)
+                           let dict = finding.Value
+                           
+                           if isWordDict dict && isMoveValid (convertToValidationMove newMove) up
+                           then newMove :: acc
+                           else aux acc newMove (word + (string char)) newHand dict (coordChanger coord)
+                        else
+                            if 
+                               tileAtCoord.IsSome 
+                               && (traverseUntillNull [] map coord horisontal up |> List.fold (fun acc item -> acc + string (fst item)) "" ) |> isWord  <|dict
+                               && isMoveValid (convertToValidationMove move) up
+                            then  move :: acc
+                            else acc
+                    ) acc (snd tile)   
+                 ) acc hand
+            aux acc [] word hand dict (coordChanger coord)
+        //See if combination is word is true
+        let result = List.fold (fun acc prefix -> attemptAllCombinations acc prefix hand dict up) [] prefixes
+        List.fold (fun (acc:move list) suffix -> attemptAllCombinations acc suffix hand revDict negUp) result suffixes
+
+    let generateMostCashMoneyMove (state:state) : move =
+        let moves = generateAllValidMoves state |> List.sortBy (fun x -> x.Length) |> List.rev
+        if moves.Length <> 0
+        then
+            moves.[0]
+        else []
+
     let generateValidMove (state:state) : move=
 
         let map = state.board.boardMap
@@ -170,8 +264,3 @@
                         attemptAllCombinations suffix hand revDict negUp
             ) [] suffixes
         else result
-        //See if play is valid
-    
-        //if valid return that move
-    
-        //(word,horisontal)

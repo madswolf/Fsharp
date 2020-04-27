@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="GenerateMostCashMoneyMove.fs" />
     <Compile Include="File1.fs" />
     <Compile Include="UpdateBoard.fs" />
     <Compile Include="UpdateHand.fs" />

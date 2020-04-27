@@ -17,9 +17,9 @@ let filepath string =
 let testThingy boardName = 
     let standardboard = readLines(filepath boardName) |> Seq.fold(fun acc item -> acc + item) ""
     
-    let thing = File.CreateText(filepath (boardName + "Result"))
+
     let board = (runTextParser stmParse standardboard)
-  
+    let thing = File.CreateText(filepath (boardName + "Result"))  
     thing.Write(board)
     thing.Dispose ()
     let actual = readLines(filepath (boardName + "Result")) |> Seq.fold(fun acc item -> item + acc) ""

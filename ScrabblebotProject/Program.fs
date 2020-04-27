@@ -20,7 +20,7 @@ let spawnMultiples name bot =
 let main argv =
     DebugPrint.debugFlag <- false // Change to false to supress debug output
 
-    let board = StandardBoard.standardBoard ()
+    let board = HoleBoard.holeBoard ()
     let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     let dictionary = readLines "../../../EnglishDictionary.txt"
     let handSize = 7u
@@ -29,7 +29,7 @@ let main argv =
     let seed = None
     let port = 13001
 
-    let players = [("Jesper",Oxyphenbutazone.Startup.startGame);("thicc" , ThiccScrabbleBot.Scrabble.startGame)]
+    let players = [("thicc" , ThiccScrabbleBot.Scrabble.startGame)]
  
     do ScrabbleServer.Comm.startGame
           board alphabet dictionary handSize timeout tiles seed port players

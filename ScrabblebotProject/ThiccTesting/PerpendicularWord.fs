@@ -6,7 +6,7 @@ open ValidityEngine
 
 [<Fact>]
 let getPerpendicularWord_starting20_given_continues_horisontal_starting00_hello__returns_hello () =
-    let things = [('H',(0,0));('E',(1,0));('L',(2,0));('L',(3,0));('O',(4,0))]
+    let things = [(('H',0),(0,0));(('E',0),(1,0));(('L',0),(2,0));(('L',0),(3,0));(('O',0),(4,0))]
     let map = List.fold(fun acc item -> Map.add (snd item) (fst item) acc) Map.empty things
     let startcoord = (2,0)
     let actual = getPerpendicularWord map startcoord false 1
@@ -15,7 +15,7 @@ let getPerpendicularWord_starting20_given_continues_horisontal_starting00_hello_
 
 [<Fact>]
 let getPerpendicularWord_starting40_given_continues_horisontal_starting00_hello__returns_hello () =
-    let things = [('D',(0,2));('E',(0,1));('H',(0,0));('A',(0,-2));('A',(0,-1))]
+    let things = [(('D',0),(0,2));(('E',0),(0,1));(('H',0),(0,0));(('A',0),(0,-2));(('A',0),(0,-1))]
     let map = List.fold(fun acc item -> Map.add (snd item) (fst item) acc) Map.empty things
     let startcoord = (0,0)
     let actual = getPerpendicularWord map startcoord true 1
@@ -26,7 +26,7 @@ let getPerpendicularWord_starting40_given_continues_horisontal_starting00_hello_
 [<Fact>]
 let getPerpendicularWord_given_board_with_AAHED_and_move_hello_returns_AAHED() =
     
-    let things = [('A',(0,-2));('A',(0,-1));('H',(0,0));('E',(0,1));('D',(0,2))]
+    let things = [(('A',0),(0,-2));(('A',0),(0,-1));(('H',0),(0,0));(('E',0),(0,1));(('D',0),(0,2))]
     let map = List.fold(fun acc item -> Map.add (snd item) (fst item) acc) Map.empty things
     let coord = (0,0)
     let actual = getPerpendicularWord map coord true 1
@@ -36,7 +36,7 @@ let getPerpendicularWord_given_board_with_AAHED_and_move_hello_returns_AAHED() =
 [<Fact>]
 let getPerpendicularWord_given_board_with_HAUL_returns_true() =
     
-    let things = [('H',(0,0));('A',(1,0));('U',(2,0));('L',(3,0))]
+    let things = [(('H',0),(0,0));(('A',0),(1,0));(('U',0),(2,0));(('L',0),(3,0))]
     let map = List.fold(fun acc item -> Map.add (snd item) (fst item) acc) Map.empty things
     let coord = (0,0)
     let actual = getPerpendicularWord map coord false 1

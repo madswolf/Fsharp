@@ -52,12 +52,12 @@ let tileMap : Map<uint32,tile>=
 
 [<Fact>]
 let isContinuosMove_given_vertical_continuos_hello_returns_true() =
-    let things = [('H',(0,0));('E',(1,0));('L',(2,0))]
+    let things = [(('H',0),(0,0));(('E',0),(1,0));(('L',0),(2,0))]
     let map = List.fold(fun acc item -> Map.add (snd item) (fst item) acc) Map.empty things
     let board = boardWithoutBoardState map
-    let move = [((3,0),(12u,('L',1)));((4,0),(15u,('O',1)));]
+    let move = [((3,0),(12u,('L',0)));((4,0),(15u,('O',0)));]
     let actual = (updateBoard board move).boardMap
     let expected = 
-        [('H',(0,0));('E',(1,0));('L',(2,0));('L',(3,0));('O',(4,0))]|> 
+        [(('H',0),(0,0));(('E',0),(1,0));(('L',0),(2,0));(('L',0),(3,0));(('O',0),(4,0))]|> 
         List.fold(fun acc item -> Map.add (snd item) (fst item) acc) Map.empty
     Map.map (fun index item -> Assert.Equal(item,actual.[index])) expected

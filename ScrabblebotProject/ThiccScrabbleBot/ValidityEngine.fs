@@ -12,7 +12,7 @@
         Map.add (fst move) (snd move) map
 
     //A function that traverses the given map horisontally or vertically positively or negatively depending on arguments
-    let rec traverseUntillNull acc (map:Map<coord,char>) coord horisontal up =
+    let rec traverseUntillNull acc (map:Map<coord,char * int>) coord horisontal up =
         let result = map.TryFind coord
         if (result).IsSome 
         then 
@@ -20,19 +20,19 @@
             traverseUntillNull (result.Value :: acc) map coord horisontal up
         else List.rev acc
 
-    let getPerpendicularWord map x horisontal up =
+    let getPerpendicularWord map x horisontal up :string =
         //get letters to the right/below of center
         let coord = changeCoordAccordingToHorisontalAndUp  x (not horisontal) (1 * up)
         let right = traverseUntillNull [] map coord (not horisontal) (1 * up)
         //get letters from center to left/above 
         let left = (traverseUntillNull [] map  x (not horisontal) (-1 * up)) |> List.rev
         let resultingword = left @ right 
-        (resultingword) |> List.fold (fun acc item -> acc + string item ) "" 
+        (resultingword) |> List.fold (fun acc item -> acc + string (fst item) ) "" 
          
 
     
     //does not work right now ignores the one in the middle
-    let rec traverseUntillLastLetterAndVerifyOrtogonalWords acc (map:Map<coord,char>) (move:(coord * char) list) (dict:Dictionary) (horisontal:bool) up:bool =
+    let rec traverseUntillLastLetterAndVerifyOrtogonalWords acc (map:Map<coord,char * int>) (move:(coord * (char * int)) list) (dict:Dictionary) (horisontal:bool) up:bool =
         if (not acc)
         then acc
         else 
@@ -53,23 +53,11 @@
     let dict list = 
             list|>
             Seq.fold (fun acc x ->  insert x acc) (empty " ")
-         
-    let isHorisontalMove (move:(coord * char) list) =
-        if move.Length = 1 
-        then
-            let thing = "boos"
-            false 
-        else
-            let xDifference = fst (fst move.[0]) - fst (fst move.[1]) 
-            let yDifference = snd (fst move.[0]) - snd (fst move.[1])
-            if xDifference <> 0 && yDifference = 0 
-            then true
-            else false
         
     let getXorYByHorisontal horisontal coord=
         if horisontal then fst coord else snd coord
 
-    let isContinuosMove (move:(coord * char) list) horisontal =
+    let isContinuosMove (move:(coord * (char * int)) list) horisontal =
         let getXorY = getXorYByHorisontal horisontal
         let getNotXorY = getXorYByHorisontal (not horisontal)
         let move = move |> List.sortBy (fun x -> getXorY(fst x))
@@ -84,10 +72,12 @@
             else acc
 
         List.fold (isContinous
-        ) (true,fst move.[1]) move |>
+        ) (true,(fst move.[1])) move |>
         fst
+    let convertToValidationMove move : (coord * (char * int)) list=
+         List.map (fun x -> (fst x , snd(snd x))) move
     //            let move = List.map (fun x -> (fst x,fst (snd (snd x)))) move
-    let isValidPlay (move:(coord * char) list) (board:board) dict up: bool =
+    let isValidPlay (move:(coord * (char * int)) list) (board:board) dict horisontal up: bool =
         //check if coords are not in holes
         let map = board.boardMap
         let boardFun = board.boardFun
@@ -124,7 +114,6 @@
                 traverseUntillLastLetterAndVerifyOrtogonalWords true board.boardMap move dict true up
             else false
         else
-            let horisontal = isHorisontalMove move
             //check if continuos
             let isContinous = isContinuosMove move horisontal
             if (not includesHoles) && (not overlapsWithExistingTiles) && isContinous 

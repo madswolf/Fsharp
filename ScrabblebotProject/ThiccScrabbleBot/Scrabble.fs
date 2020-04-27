@@ -31,7 +31,7 @@ module RegEx =
 
     let printHand pieces hand =
         hand |>
-        MultiSet.fold (fun _ x i -> forcePrint (sprintf "%d -> (%A, %d)\n" x (Map.find x pieces) i)) ()
+        MultiSet.fold (fun acc x i -> acc + sprintf " %d -> (%A, %d)\n" x (Map.find x pieces) i) ""
 
 module Scrabble =
     open System.Threading
@@ -47,7 +47,7 @@ module Scrabble =
             
         let rec aux (st:state) =
             //Thread.Sleep(5000) // only here to not confuse the pretty-printer. Remove later.
-            //Print.printHand st.tiles (hand st)
+
 
             let state = st
 
@@ -103,7 +103,7 @@ module Scrabble =
                 //reduce number of players
                 let st' = mkState st.tiles (st.movesUntillTurn - 1u) (st.numberOfPlayers-1u) st.dictionary st.reverseDictionary st.hand st.board st.errors
                 aux st'
-            | RGPE err -> aux (mkState st.tiles st.movesUntillTurn st.numberOfPlayers st.dictionary st.reverseDictionary st.hand st.board (sprintf "%A \n Gameplay Error: %A" st.errors err))
+            | RGPE err -> aux (mkState st.tiles st.movesUntillTurn st.numberOfPlayers st.dictionary st.reverseDictionary st.hand st.board (sprintf "%A \n Gameplay Error: %A \n Hand: \N %A" st.errors err (Print.printHand st.tiles (hand st))))
         aux st
 
          

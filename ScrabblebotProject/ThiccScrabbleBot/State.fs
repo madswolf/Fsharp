@@ -25,7 +25,7 @@
 
     type board = {
         boardFun      : boardFun
-        boardMap      : Map<coord,char>
+        boardMap      : Map<coord,(char * int)>
         usedSquare    : int
         squares       : Map<int,Map<int,squareFun>>
         center        : coord
@@ -34,7 +34,7 @@
     let mkBoard bfun us sq center map = { boardFun = bfun; boardMap = map; usedSquare = us; squares = sq; center = center}
 
     let updateBoard board (ms:move) =
-            List.fold (fun acc item -> Map.add (fst item) (fst (snd (snd item))) acc) board.boardMap ms |> 
+            List.fold (fun acc item -> Map.add (fst item)  (snd (snd item)) acc) board.boardMap ms |> 
             mkBoard board.boardFun board.usedSquare board.squares board.center
 
     type state = {

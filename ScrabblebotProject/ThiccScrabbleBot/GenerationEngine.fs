@@ -84,34 +84,28 @@
 
             let word = (fst (fst prefix))
             let horisontal = snd prefix
+
+            let coord = snd(fst prefix )
             
-            let attachCoordsTomove (move:(uint32 *(char * int)) list) : move=
-                let coordChanger = 
-                    fun upamount -> 
-                        let coord = snd (fst prefix)
-                        changeCoordAccordingToHorisontalAndUp coord horisontal (upamount * up)
-                let coords = 
-                    [1 ..  move.Length] |>
-                    List.map (coordChanger)
-                List.zip coords move
+            let coordChanger = 
+                fun coord -> 
+                    changeCoordAccordingToHorisontalAndUp coord horisontal up
 
             let isMoveOverCenter move =
                 List.fold (fun acc item -> if acc then acc else fst item = state.board.center) false move
 
             let isMoveValid move up =
-                let moveWithCoords = 
-                    attachCoordsTomove (move |> List.rev) |>
-                    List.map (fun item -> (fst item, fst(snd(snd item))))
-                let isValid = isValidPlay moveWithCoords state.board dict up
-                let moveCenter = (if isStartingMove then (isMoveOverCenter moveWithCoords) else true)
+                let isValid = isValidPlay move state.board dict horisontal up
+                let moveCenter = (if isStartingMove then (isMoveOverCenter move) else true)
                 isValid && moveCenter
+
             let dict = 
                 if word.Length <> 0 
                 then 
                     (Dictionary.tryFindString word dict).Value
                 else dict
 
-            let rec aux (move: (uint32 *(char * int)) list) (word:string) (hand:Set<uint32 * tile>) dict up: move = 
+            let rec aux (move:move) (word:string) (hand:Set<uint32 * tile>) dict coord: move = 
                     //try all sets
                      Set.fold (
                          fun acc tile -> 
@@ -126,24 +120,35 @@
                                          else 
                                              //if a char in the set has a continuation then call it again with new dict, 
                                              //new word and remove the tile from the hand
+                                             let tileAtCoord = Map.tryFind coord map
                                              let finding = Dictionary.tryFind (fst tileValue) dict
-                                             if finding.IsSome
+                                             if finding.IsSome && tileAtCoord.IsNone
                                              then 
-                                                let newMove = ((fst tile),(fst tileValue,snd tileValue)) :: move
+                                                let newMove = (coord, ((fst tile),(fst tileValue,snd tileValue))) :: move
                                                 let newHand = (Set.remove ((fst tile),snd tile) hand)
                                                 let dict = finding.Value
-                                                if isWordDict dict && isMoveValid newMove up
+                                                if isWordDict dict && isMoveValid (convertToValidationMove newMove) up
                                                 then 
-                                                    attachCoordsTomove (newMove |> List.rev)
+                                                    newMove
                                                 else
-                                                    aux newMove (word + (string char)) newHand dict up
+                                                    aux newMove (word + (string char)) newHand dict (coordChanger coord)
                                              //if not
-                                             else 
-                                                 acc
+                                             else
+                                                 let thing =  (traverseUntillNull [] map coord horisontal up |> List.fold (fun acc item -> acc + string (fst item)) "" ) |> isWord  <|dict
+                                                 if 
+                                                    tileAtCoord.IsSome 
+                                                    && (traverseUntillNull [] map coord horisontal up |> List.fold (fun acc item -> acc + string (fst item)) "" ) |> isWord  <|dict
+                                                    && isMoveValid (convertToValidationMove move) up
+                                                 then 
+                                                    //placing move would create a word
+                                                    (printf "%A" move) |> ignore
+                                                    move
+                                                 else
+                                                    acc
                                  ) acc (snd tile)
                                  
                      ) [] hand
-            aux [] word hand dict up
+            aux [] word hand dict (coordChanger coord)
             
 
         //See if combination is word is true

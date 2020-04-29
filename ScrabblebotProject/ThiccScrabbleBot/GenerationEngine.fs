@@ -116,16 +116,73 @@
                     ) acc (snd tile)   
                  ) acc hand
             aux acc [] word hand dict (coordChanger coord)
-        //See if combination is word is true
         let result = List.fold (fun acc prefix -> attemptAllCombinations acc prefix hand dict up) [] prefixes
         List.fold (fun (acc:move list) suffix -> attemptAllCombinations acc suffix hand revDict negUp) result suffixes
 
-    let generateMostCashMoneyMove (state:state) : move =
+    let generateSortaMostCashMoneyMove (state:state) : move =
         let moves = generateAllValidMoves state |> List.sortBy (fun x -> x.Length) |> List.rev
         if moves.Length <> 0
-        then
+        then 
             moves.[0]
         else []
+
+    let getSquaresForMove state move =
+        List.map(
+            fun x -> 
+                let result = state.board.boardFun (fst x) state.board.boardMap
+                if result <> -1
+                then
+                    state.board.squares.[result]
+                else []
+        ) (fst move)
+
+
+    let calculatepointsForCreatedMoves state (move: move) : move * int =
+        let thing =
+            List.map(fun thing ->(fst thing, (snd(snd thing)))) move |>
+            (fun x -> traverseUntillLastLetterAndAccumulateOrtogonalMoves [] state.board.boardMap x true 1) |>
+            List.fold (
+                fun acc x -> 
+                    let squares = getSquaresForMove state x
+                    let word = snd x 
+                    let points = calculatePoints squares word 
+                    points + acc
+            ) 0
+        (move,thing)
+
+
+    let generateMostCashMoneyMove (state:state) : move =
+        
+        let moves = generateAllValidMoves state
+            
+        let movesSortedByPoints = 
+            List.map (fun x -> calculatepointsForCreatedMoves state x )  moves |>
+            List.sortBy (fun x -> snd x) |> 
+            List.rev
+
+        if movesSortedByPoints.Length <> 0
+        then
+            fst movesSortedByPoints.[0]
+        else []
+
+    let generateMostCashMoneyMoveParallel (state:state) : move =
+        
+        let moves = generateAllValidMoves state
+
+        let movesSortedByPoints = 
+            List.map (fun x -> async{ return calculatepointsForCreatedMoves state x}) moves |>
+            Async.Parallel |>
+            Async.RunSynchronously |>
+            Array.toList |> 
+            List.sortBy (fun x -> snd x) |> 
+            List.rev
+
+        if movesSortedByPoints.Length <> 0
+        then
+            fst movesSortedByPoints.[0]
+        else []
+            
+                
 
     let generateValidMove (state:state) : move=
 
@@ -228,7 +285,6 @@
                                                     aux newMove (word + (string char)) newHand dict (coordChanger coord)
                                              //if not
                                              else
-                                                 let thing =  (traverseUntillNull [] map coord horisontal up |> List.fold (fun acc item -> acc + string (fst item)) "" ) |> isWord  <|dict
                                                  if 
                                                     tileAtCoord.IsSome 
                                                     && (traverseUntillNull [] map coord horisontal up |> List.fold (fun acc item -> acc + string (fst item)) "" ) |> isWord  <|dict

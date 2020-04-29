@@ -11,6 +11,40 @@
     let addMoveToMap move map =
         Map.add (fst move) (snd move) map
 
+    let rec traverseUntillNullAccumulateMove acc (map:Map<coord,char * int>) coord horisontal up  : ((coord * (char * int )) list * (char * int ) list)=
+        let result = map.TryFind coord
+        if (result).IsSome 
+        then 
+            let coord = changeCoordAccordingToHorisontalAndUp coord horisontal up
+            traverseUntillNullAccumulateMove (((coord,result.Value):: fst acc, (result.Value :: snd acc))) map coord horisontal up
+        else (List.rev (fst acc),snd acc)
+
+    let getPerpendicularMove  map x horisontal up : (((coord * (char * int)) list) * (char * int ) list) =
+        //get letters to the right/below of center
+        let coord = changeCoordAccordingToHorisontalAndUp  x (not horisontal) (1 * up)
+        let right = traverseUntillNullAccumulateMove ([],[]) map coord (not horisontal) (1 * up)
+        //get letters from center to left/above 
+        let left = (traverseUntillNullAccumulateMove ([],[]) map  x (not horisontal) (-1 * up))
+        let resultingword = ((fst left |> List.rev) @ (fst right), (snd left |> List.rev) @ (snd right)) 
+        (resultingword) 
+
+    let rec traverseUntillLastLetterAndAccumulateOrtogonalMoves acc (map:Map<coord,char * int>) (move:(coord * (char * int)) list) (horisontal:bool) up : ((((coord * (char * int)) list) * (char * int ) list)) list =
+        match move with
+        |x::y::xs -> 
+            let map = (addMoveToMap x map)
+            let resultingWord = getPerpendicularMove map (fst x) horisontal up
+            let acc = resultingWord :: acc
+            traverseUntillLastLetterAndAccumulateOrtogonalMoves acc map (y::xs)horisontal up
+        |x::xs -> 
+            let map = (addMoveToMap x map)
+            let perpendicularMove = getPerpendicularMove map (fst x) horisontal up
+            let resultingWord = getPerpendicularMove map (fst x) (not horisontal) up
+
+            resultingWord :: perpendicularMove:: acc
+        |_ -> acc
+
+
+
     //A function that traverses the given map horisontally or vertically positively or negatively depending on arguments
     let rec traverseUntillNull acc (map:Map<coord,char * int>) coord horisontal up =
         let result = map.TryFind coord
@@ -28,8 +62,6 @@
         let left = (traverseUntillNull [] map  x (not horisontal) (-1 * up)) |> List.rev
         let resultingword = left @ right 
         (resultingword) |> List.fold (fun acc item -> acc + string (fst item) ) "" 
-         
-
     
     //does not work right now ignores the one in the middle
     let rec traverseUntillLastLetterAndVerifyOrtogonalWords acc (map:Map<coord,char * int>) (move:(coord * (char * int)) list) (dict:Dictionary) (horisontal:bool) up:bool =
@@ -87,7 +119,7 @@
                     if acc 
                     then acc 
                     else 
-                        (boardFun (fst x)) |>
+                        (boardFun (fst x) board.boardMap) |>
                         fun thing -> 
                             if thing <> -1
                             then false 
@@ -125,10 +157,9 @@
             else 
                 false
     
-    let boardProgToBoardFun boardProg squares  : boardFun= 
-      runTextParser stmParse boardProg |> 
-      stmntToBoardFun
-      <| squares
+    let boardProgToBoardFun boardProg usedSquare  : boardFun= 
+        let stm = runTextParser stmParse boardProg  
+        stmntToBoardFun stm usedSquare 
     
     let squaresOfProgToSquaresOfFun squares =
      Map.map (
@@ -140,10 +171,20 @@
              ) map
      ) squares
 
+    let squaresOfProgToSquaresOfFunList (squares:Map<int,squareProg>) : Map<int,square> =
+        Map.map (
+            fun id map ->
+                Map.fold (
+                    fun acc key value -> 
+                        ((key), (runTextParser stmParse value |> stmntToSquareFun)) :: acc
+                ) [] map
+        ) squares
+
     let boardToStateBoard (boardP:ScrabbleUtil.boardProg) map = 
         let squares = boardP.squares |> squaresOfProgToSquaresOfFun
-        let boardFun = boardProgToBoardFun boardP.prog squares
-        mkBoard boardFun boardP.usedSquare squares boardP.center map
+        let squaresList = boardP.squares |> squaresOfProgToSquaresOfFunList 
+        let boardFun = boardProgToBoardFun boardP.prog boardP.usedSquare
+        mkBoard boardFun boardP.usedSquare squaresList boardP.center map
 
     let boardToStateBoardWithMap (boardP:ScrabbleUtil.boardProg)= 
         boardToStateBoard boardP Map.empty

@@ -96,17 +96,21 @@ let tileMap : Map<uint32,tile>=
 
 let squares = 
     (StandardBoard.standardBoard ()).squares |>
-    squaresOfProgToSquaresOfFun
+    squaresOfProgToSquaresOfFunList
 
+let usedSquare = 
+    (StandardBoard.standardBoard ()).usedSquare
 let boardFun =
     (StandardBoard.standardBoard ()).prog |>
-    boardProgToBoardFun <| squares
+    boardProgToBoardFun  <| usedSquare
 
 let center = (StandardBoard.standardBoard ()).center
 
 let stateWithoutBoardMapOrhand hand boardMap=
-    mkBoard boardFun 0 squares center boardMap |>
-    mkState tileMap 0u 0u dict reverseDict hand <|""
+    mkState tileMap 0u 0u dict reverseDict hand (mkBoard boardFun 0 squares center boardMap) "" []
+    
+
+
 [<Fact>]
 let generateAWordFromState_given_board_with_hel_and_hand_LOL__finds_move_LO () =
     let things = [(('H',0),(0,0));(('E',0),(1,0));(('L',0),(2,0))]

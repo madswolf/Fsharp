@@ -43,25 +43,27 @@ module Scrabble =
     let playGame cstream (st:state)=
         
         //tick towards 0
-        let passedOrEquvalent (st:state) = mkState st.tiles (st.movesUntillTurn - 1u) st.numberOfPlayers st.dictionary st.reverseDictionary st.hand st.board st.errors
+        let passedOrEquvalent (st:state) = mkState st.tiles (st.movesUntillTurn - 1u) st.numberOfPlayers st.dictionary st.reverseDictionary st.hand st.board st.errors  st.performance
             
         let rec aux (st:state) =
-            //Thread.Sleep(5000) // only here to not confuse the pretty-printer. Remove later.
 
-
-            let state = st
-
-            if st.movesUntillTurn = 0u
-            then
-                let move = generateMostCashMoneyMove st
-                //let input =  System.Console.ReadLine()
-                let moveString = moveToString move
-                debugPrint (sprintf "Player %d -> Server:\n%A\n" (playerNumber st) (moveString)) // keep the debug lines. They are useful.
-                if move = [] 
-                then 
-                    send cstream (SMChange (MultiSet.toList st.hand))
+            let st =
+                if st.movesUntillTurn = 0u
+                then
+                    let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+                    let move = generateMostCashMoneyMove st
+                    stopWatch.Stop()
+                    let st' = mkState st.tiles (st.numberOfPlayers - 1u ) st.numberOfPlayers st.dictionary st.reverseDictionary st.hand st.board  st.errors (stopWatch.Elapsed::st.performance) 
+                    let moveString = moveToString move
+                    debugPrint (sprintf "Player %d -> Server:\n%A\n" (playerNumber st) (moveString)) // keep the debug lines. They are useful.
+                    if move = [] 
+                    then 
+                        send cstream (SMChange (MultiSet.toList st.hand))
+                    else 
+                        send cstream (SMPlay move)
+                    st'
                 else 
-                    send cstream (SMPlay move)
+                    st
 
             //wait for next message from server and update state depending on response
             let msg = recv cstream
@@ -76,17 +78,17 @@ module Scrabble =
 
                 let board = updateBoard st.board ms
 
-                let st' = mkState st.tiles (st.numberOfPlayers - 1u ) st.numberOfPlayers st.dictionary st.reverseDictionary hand board (sprintf  "%A played well" st.errors)
+                let st' = mkState st.tiles (st.numberOfPlayers - 1u ) st.numberOfPlayers st.dictionary st.reverseDictionary hand board  st.errors st.performance
                 aux st'
             | RCM(CMChangeSuccess (newPieces)) ->
                 //update hand
                 let hand = updateHand MultiSet.empty [] newPieces
-                let st' = mkState st.tiles st.movesUntillTurn st.numberOfPlayers st.dictionary st.reverseDictionary hand st.board st.errors
+                let st' = mkState st.tiles st.movesUntillTurn st.numberOfPlayers st.dictionary st.reverseDictionary hand st.board st.errors st.performance
                 aux st'
             | RCM (CMPlayed (pid, ms, points)) ->
                 //update internal board
                 let board = updateBoard st.board ms
-                let st' = mkState st.tiles (st.movesUntillTurn - 1u) st.numberOfPlayers st.dictionary st.reverseDictionary st.hand board st.errors
+                let st' = mkState st.tiles (st.movesUntillTurn - 1u) st.numberOfPlayers st.dictionary st.reverseDictionary st.hand board st.errors st.performance
                 aux st'
             | RCM (CMPlayFailed (pid, ms)) ->
                 aux (passedOrEquvalent st)
@@ -97,13 +99,13 @@ module Scrabble =
             |RCM (CMTimeout pid) ->
                 aux (passedOrEquvalent st)
             | RCM (CMGameOver _) -> 
-                File.WriteAllText((filepath "errors"),st.errors)
+                File.WriteAllText((filepath "errors"),st.errors + sprintf "%A average time for move" ((st.performance |> List.map (fun x -> x.Milliseconds) |> List.sum)/st.performance.Length))
                 () // end the misery
             | RCM (CMForfeit pid) -> 
                 //reduce number of players
-                let st' = mkState st.tiles (st.movesUntillTurn - 1u) (st.numberOfPlayers-1u) st.dictionary st.reverseDictionary st.hand st.board st.errors
+                let st' = mkState st.tiles (st.movesUntillTurn - 1u) (st.numberOfPlayers-1u) st.dictionary st.reverseDictionary st.hand st.board st.errors  st.performance
                 aux st'
-            | RGPE err -> aux (mkState st.tiles st.movesUntillTurn st.numberOfPlayers st.dictionary st.reverseDictionary st.hand st.board (sprintf "%A \n Gameplay Error: %A \n Hand: \N %A" st.errors err (Print.printHand st.tiles (hand st))))
+            | RGPE err -> aux (mkState st.tiles st.movesUntillTurn st.numberOfPlayers st.dictionary st.reverseDictionary st.hand st.board (sprintf "%A \n Gameplay Error: %A \n Hand: \N %A" st.errors err (Print.printHand st.tiles (hand st)))  st.performance)
         aux st
 
          
@@ -135,7 +137,7 @@ module Scrabble =
         let revDict = List.map (reverse) words |> Dictionary.mkDict
         let board = boardToStateBoardWithMap boardP
         let movesUntilYourTurn = ((numPlayers - ( playerTurn -  playerNumber)) % numPlayers) 
-        fun () -> playGame cstream (mkState tiles movesUntilYourTurn numPlayers  dict revDict handSet board "")
+        fun () -> playGame cstream (mkState tiles movesUntilYourTurn numPlayers  dict revDict handSet board "" [])
     
 
         

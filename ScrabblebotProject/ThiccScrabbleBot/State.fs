@@ -27,7 +27,7 @@
         boardFun      : boardFun
         boardMap      : Map<coord,(char * int)>
         usedSquare    : int
-        squares       : Map<int,Map<int,squareFun>>
+        squares       : Map<int,square>
         center        : coord
     }
 
@@ -46,9 +46,10 @@
         board         : board
         tiles         : Map<uint32, tile>
         errors        : string
+        performance : System.TimeSpan list
     }
 
-    let mkState tiles moves playerNum dict revDict h board errors= {tiles = tiles; movesUntillTurn = moves; numberOfPlayers = playerNum; dictionary = dict; reverseDictionary = revDict; hand = h; board = board; errors = errors}
+    let mkState tiles moves playerNum dict revDict h board errors performance= {tiles = tiles; movesUntillTurn = moves; numberOfPlayers = playerNum; dictionary = dict; reverseDictionary = revDict; hand = h; board = board; errors = errors; performance = performance}
 
     let newState pn hand = mkState pn hand
 

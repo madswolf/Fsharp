@@ -23,9 +23,11 @@ let squares =
     (StandardBoard.standardBoard ()).squares |>
     squaresOfProgToSquaresOfFun
 
+let usedSquare = 
+    (StandardBoard.standardBoard ()).usedSquare
 let boardFun =
     (StandardBoard.standardBoard ()).prog |>
-    boardProgToBoardFun <| squares
+    boardProgToBoardFun  <| usedSquare
 
 [<Fact>]
 let getPerpendicularWord_starting40_given_continues_horisontal_starting00_hello__returns_hello () =

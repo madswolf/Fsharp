@@ -20,7 +20,7 @@ let spawnMultiples name bot =
 let main argv =
     DebugPrint.debugFlag <- false // Change to false to supress debug output
 
-    let board = ScrabbleUtil.RandomBoard.randomBoard ()
+    let board = StandardBoard.standardBoard ()
     let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     let dictionary = readLines "../../../EnglishDictionary.txt"
     let handSize = 7u

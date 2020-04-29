@@ -238,6 +238,7 @@
 
     type word = (char * int) list
     type squareFun = word -> int -> int -> int
+    type square = (int * squareFun) list
     
     let stmntToSquareFun stm :squareFun = 
         fun word pos acc ->
@@ -247,17 +248,27 @@
             |Success v -> v
             |_ -> failwith "uwu"
 
+    let calculatePoints  (squares:square list)  (word:word) =
+        let thing = List.mapi (fun index square ->  List.map (fun (innersquare:int * squareFun) ->  (fst innersquare,snd innersquare word index) ) square) squares|>
+                    List.fold (fun a b -> a @ b) [] |>
+                    List.sortBy(fun square -> fst square) |>
+                    List.map (fun square -> snd square) |>
+                    List.fold(fun acumulator square -> square << acumulator) (fun x -> x) 
+        thing 0
     type coord = int * int
 
-    type boardFun = coord -> int
+    type boardFun = coord -> Map<coord,(char*int)>-> int
 
-    let stmntToBoardFun stm (squares:Map<int,Map<int,squareFun>>): boardFun = 
-        fun (x,y) ->
-            let state = mkState [("_x_", x);("_y_", y);("_result_",0)] [] ["_x_";"_y_";"_result_"] 
-            (stmntEval2 stm)>>>= (lookup "_result_")|> evalSM state |>
-            function 
-            |Success v -> v
-            |_ -> failwith "uwu"
+    let stmntToBoardFun stm usedSquare: boardFun = 
+        fun (x,y) map ->
+            if (Map.tryFind (x,y) map).IsSome
+            then usedSquare
+            else
+                let state = mkState [("_x_", x);("_y_", y);("_result_",0)] [] ["_x_";"_y_";"_result_"] 
+                (stmntEval2 stm)>>>= (lookup "_result_")|> evalSM state |>
+                function 
+                |Success v -> v
+                |_ -> failwith "uwu"
 
             
     (*let stmntToBoardFunAlt stm (squares:Map<int,Map<int,squareFun>>) : boardFun =

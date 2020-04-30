@@ -20,12 +20,12 @@ let spawnMultiples name bot =
 let main argv =
     DebugPrint.debugFlag <- false // Change to false to supress debug output
 
-    let board = StandardBoard.standardBoard ()
+    let board = InfiniteBoard.infiniteBoard ()
     let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     let dictionary = readLines "../../../EnglishDictionary.txt"
     let handSize = 7u
     let timeout = None
-    let tiles = English.tiles 1u
+    let tiles = English.tiles 10u
     let seed = None
     let port = 13001
 

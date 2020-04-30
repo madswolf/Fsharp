@@ -45,11 +45,12 @@
         hand          : MultiSet.MultiSet<uint32>
         board         : board
         tiles         : Map<uint32, tile>
+        handSize      : int
         errors        : string
         performance : System.TimeSpan list
     }
 
-    let mkState tiles moves playerNum dict revDict h board errors performance= {tiles = tiles; movesUntillTurn = moves; numberOfPlayers = playerNum; dictionary = dict; reverseDictionary = revDict; hand = h; board = board; errors = errors; performance = performance}
+    let mkState tiles moves playerNum dict revDict h board handsize errors performance= {tiles = tiles; movesUntillTurn = moves; numberOfPlayers = playerNum; dictionary = dict; reverseDictionary = revDict; hand = h; board = board; handSize = handsize; errors = errors; performance = performance}
 
     let newState pn hand = mkState pn hand
 

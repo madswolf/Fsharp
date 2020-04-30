@@ -106,8 +106,9 @@ let boardFun =
 
 let center = (StandardBoard.standardBoard ()).center
 
+//change handsize if you want accurate best move
 let stateWithoutBoardMapOrhand hand boardMap=
-    mkState tileMap 0u 0u dict reverseDict hand (mkBoard boardFun 0 squares center boardMap) "" []
+    mkState tileMap 0u 0u dict reverseDict hand (mkBoard boardFun 0 squares center boardMap) 0 "" []
     
 
 

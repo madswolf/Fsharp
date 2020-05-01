@@ -8,6 +8,7 @@
     open ValidityEngine
     open ScrabbleUtil
     open MultiSet
+    open FSharp.Collections.ParallelSeq
     //returns a list of string * coord * bool where the strings are the prefixes, 
     //the coord is the coord of the last character, and the boolean is if it's horisontal or not
 
@@ -32,8 +33,68 @@
         
         Map.fold (fun acc key _ -> tryFindHoriVerti acc key map ) [] map
 
+    let rec attemptAllCombinationsInner (acc:(move * bool) list) (move:move) (hand:MultiSet<uint32>) dict coord horisontal state moveValidator coordChanger up : (move * bool) list= 
+        //try all sets
+         let handList = MultiSet.toList hand
+         if handList.Length = 0
+         then acc
+         else
+             List.fold (fun acc tileID -> 
+                 let tile = Map.find tileID state.tiles
+                 //try all chars in set
+                 Set.fold (fun acc tileValue -> 
+                     let tileAtCoord = Map.tryFind coord state.board.boardMap
+                     let char = (fst tileValue) 
+                     let value = (snd tileValue)
+                     let finding = Dictionary.tryFind (fst tileValue) dict
+                     if finding.IsSome && tileAtCoord.IsNone
+                     then 
+                        let newMove = (coord, (tileID,(char,value))) :: move
+                        let newHand = (MultiSet.removeSingle tileID hand)
+                        let dict = finding.Value
+                        
+                        if isWordDict dict && moveValidator (convertToValidationMove newMove) up
+                        then 
+                            if Dictionary.isContinuableDict dict
+                            then attemptAllCombinationsInner ((newMove, horisontal) :: acc) newMove newHand dict (coordChanger coord) horisontal state moveValidator coordChanger up
+                            else (newMove,horisontal) :: acc
+                        else attemptAllCombinationsInner acc newMove newHand dict (coordChanger coord) horisontal state moveValidator coordChanger up
+                     else
+                         if 
+                            //bridge statement
+                            tileAtCoord.IsSome 
+                            && (traverseUntillNull [] state.board.boardMap coord horisontal up |> List.fold (fun acc item -> acc + string (fst item)) "" ) |> isWord  <|dict
+                            && moveValidator (convertToValidationMove move) up
+                         then  (move,horisontal) :: acc
+                         else acc
+                 ) acc tile 
+             ) acc handList
 
-    let generateAllValidMoves (state:state) : move list=
+    let attemptAllCombinations state (acc:(move * bool) list) (prefix:((string * coord) * bool)) (hand:MultiSet<uint32>) dict up : (move * bool) list =     
+
+               let word = (fst (fst prefix))
+               let horisontal = snd prefix
+
+               let coord = snd(fst prefix )
+               
+               let coordChanger = 
+                   fun coord -> 
+                       changeCoordAccordingToHorisontalAndUp coord horisontal up
+
+               let moveValidator move up =
+                   let isValid = isValidPlay move state.board dict horisontal up
+                   isValid
+
+               let dict = 
+                   if word.Length <> 0 
+                   then 
+                       (Dictionary.tryFindString word dict).Value
+                   else dict
+               
+               attemptAllCombinationsInner acc [] hand dict (coordChanger coord) horisontal state moveValidator coordChanger up
+
+
+    let generateAllValidMoves (state:state) : (move* bool) list=
 
         let map = state.board.boardMap
         let dict = state.dictionary
@@ -62,70 +123,46 @@
                 ]
             else
                 findPrefixes map revDict negUp
+
+        let result = 
+            PSeq.collect (fun prefix -> (attemptAllCombinations state [] prefix hand dict up)) prefixes |>
+            PSeq.toList
+        (PSeq.collect (fun suffix -> attemptAllCombinations state [] suffix hand revDict negUp) suffixes |>
+         PSeq.toList) @ result
+
+
+    let generateParrallelMovesWithMovePrefix acc (state:state) (move:(move * bool)): (move * bool) list = 
+        let index = (fst move).[0]
+        let hand = MultiSet.removeSingle (fst (snd index)) state.hand
+        let startCoord = (fst index)
+        let horisontal = (not (snd move))
         
-        let attemptAllCombinations  (acc:move list) (prefix:((string * coord) * bool)) (hand:MultiSet<uint32>) dict up : move list =     
+        let moveValidator move up =
+            let isValid = isValidPlay move state.board state.dictionary horisontal up
+            isValid
+        let coordChanger = 
+            fun coord -> 
+                changeCoordAccordingToHorisontalAndUp coord horisontal 1
+        let continueCoord = coordChanger startCoord
+        let dict = (Dictionary.tryFind (fst (snd(snd index))) state.dictionary).Value
+        let result = attemptAllCombinationsInner acc (fst move) hand dict continueCoord horisontal state moveValidator coordChanger 1
 
-            let word = (fst (fst prefix))
-            let horisontal = snd prefix
+        let moveValidator move up =
+            let isValid = isValidPlay move state.board state.reverseDictionary horisontal up
+            isValid
+        let coordChanger = 
+            fun coord -> 
+                changeCoordAccordingToHorisontalAndUp coord horisontal -1
+        let continueCoord = coordChanger startCoord
+        let dict = (Dictionary.tryFind (fst (snd(snd index))) state.reverseDictionary).Value
+        attemptAllCombinationsInner result (fst move) hand dict continueCoord horisontal state moveValidator coordChanger -1 
 
-            let coord = snd(fst prefix )
-            
-            let coordChanger = 
-                fun coord -> 
-                    changeCoordAccordingToHorisontalAndUp coord horisontal up
-
-            let isMoveOverCenter move =
-                List.fold (fun acc item -> if acc then acc else fst item = state.board.center) false move
-
-            let isMoveValid move up =
-                let isValid = isValidPlay move state.board dict horisontal up
-                let moveCenter = (if isStartingMove then (isMoveOverCenter move) else true)
-                isValid && moveCenter
-
-            let dict = 
-                if word.Length <> 0 
-                then 
-                    (Dictionary.tryFindString word dict).Value
-                else dict
-
-            let rec aux (acc:move list) (move:move) (hand:MultiSet<uint32>) dict coord: move list= 
-                //try all sets
-                 let handList = MultiSet.toList hand
-                 List.fold (fun acc tileID -> 
-                     let tile = Map.find tileID state.tiles
-                     //try all chars in set
-                     Set.fold (fun acc tileValue -> 
-                         let tileAtCoord = Map.tryFind coord map
-                         let char = (fst tileValue) 
-                         let value = (snd tileValue)
-                         let finding = Dictionary.tryFind (fst tileValue) dict
-                         if finding.IsSome && tileAtCoord.IsNone
-                         then 
-                            let newMove = (coord, (tileID,(char,value))) :: move
-                            let newHand = (MultiSet.removeSingle tileID hand)
-                            let dict = finding.Value
-                            
-                            if isWordDict dict && isMoveValid (convertToValidationMove newMove) up
-                            then newMove :: acc
-                            else aux acc newMove newHand dict (coordChanger coord)
-                         else
-                             if 
-                                tileAtCoord.IsSome 
-                                && (traverseUntillNull [] map coord horisontal up |> List.fold (fun acc item -> acc + string (fst item)) "" ) |> isWord  <|dict
-                                && isMoveValid (convertToValidationMove move) up
-                             then  move :: acc
-                             else acc
-                     ) acc tile 
-                 ) acc handList
-            aux acc [] hand dict (coordChanger coord)
-        let result = List.fold (fun acc prefix -> attemptAllCombinations acc prefix hand dict up) [] prefixes
-        List.fold (fun (acc:move list) suffix -> attemptAllCombinations acc suffix hand revDict negUp) result suffixes
 
     let generateSortaMostCashMoneyMove (state:state) : move =
-        let moves = generateAllValidMoves state |> List.sortBy (fun x -> x.Length) |> List.rev
+        let moves = generateAllValidMoves state |> List.sortBy (fun x -> (fst x).Length) |> List.rev
         if moves.Length <> 0
         then 
-            moves.[0]
+            fst moves.[0]
         else []
 
     let getSquaresForMove state move =
@@ -136,34 +173,39 @@
                 then
                     state.board.squares.[result]
                 else []
-        ) (fst move)
+        ) move
 
 
-    let calculatepointsForCreatedMoves state (move: move) : move * int =
-        let handSize = int (MultiSet.size (state.hand))
+    let calculatepointsForMove state (move: (move * bool)) : move * int =
+        let handSize = state.handSize
         let thing =
-            List.map(fun thing ->(fst thing, (snd(snd thing)))) move |>
-            (fun x -> traverseUntillLastLetterAndAccumulateOrtogonalMoves [] state.board.boardMap x true 1) |>
+            List.map(fun thing ->(fst thing, (snd(snd thing)))) (fst move) |>
+            (fun x -> traverseUntillLastLetterAndAccumulateOrtogonalMoves [] state.board.boardMap x (snd move) 1) |>
+            List.filter (fun x ->  x.Length <> 1) |>
             List.fold (
                 fun acc x -> 
+                    let word =  x |> List.map (snd)
                     let squares = getSquaresForMove state x
-                    let word = snd x 
                     let points = calculatePoints squares word 
                     points + acc
             ) 0
         let result =
-            if move.Length = handSize 
+            if (fst move).Length = handSize 
             then (thing + 50)
             else thing
-        (move,result)
+        (fst move,result)
 
 
     let generateMostCashMoneyMove (state:state) : move =
         
         let moves = generateAllValidMoves state
-            
+        let movesWithParallel = 
+            moves |> 
+            List.filter (fun x -> (fst x).Length = 1) |>
+            List.fold (fun acc x -> generateParrallelMovesWithMovePrefix acc state x) moves
+
         let movesSortedByPoints = 
-            List.map (fun x -> calculatepointsForCreatedMoves state x )  moves |>
+            List.map (fun x -> calculatepointsForMove state x )  movesWithParallel |>
             List.sortBy (fun x -> snd x) |> 
             List.rev
 
@@ -176,11 +218,14 @@
         
         let moves = generateAllValidMoves state
 
+        let movesWithParallel = 
+            moves |> 
+            List.filter (fun x -> (fst x).Length = 1) |>
+            List.fold (fun acc x -> generateParrallelMovesWithMovePrefix acc state x) moves
+
         let movesSortedByPoints = 
-            List.map (fun x -> async{ return calculatepointsForCreatedMoves state x}) moves |>
-            Async.Parallel |>
-            Async.RunSynchronously |>
-            Array.toList |> 
+            PSeq.map (fun x ->calculatepointsForMove state x) movesWithParallel |>
+            PSeq.toList |>
             List.sortBy (fun x -> snd x) |> 
             List.rev
 

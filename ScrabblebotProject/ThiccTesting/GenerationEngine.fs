@@ -107,7 +107,7 @@ let boardFun =
 let center = (StandardBoard.standardBoard ()).center
 
 let stateWithoutBoardMapOrhand hand boardMap=
-    mkState tileMap 0u 0u dict reverseDict hand (mkBoard boardFun 0 squares center boardMap) "" []
+    mkState tileMap 0u 0u dict reverseDict hand (mkBoard boardFun 0 squares center boardMap) 0 "" []
 
 [<Fact>]
 let generateAWordFromState_given_board_with_hel_and_hand_LOL__finds_move_LO () =

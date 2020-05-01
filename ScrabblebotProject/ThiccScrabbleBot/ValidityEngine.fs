@@ -5,32 +5,37 @@
     open Eval
     open ScrabbleUtil
 
+    let isMoveOverCenter center move =
+        List.fold (fun acc item -> if acc then acc else fst item = center) false move
+
     let changeCoordAccordingToHorisontalAndUp coord horisontal up =
         if horisontal then (((fst coord) + up), snd coord) else (fst coord , (snd coord) + up)
     
     let addMoveToMap move map =
         Map.add (fst move) (snd move) map
 
-    let rec traverseUntillNullAccumulateMove acc (map:Map<coord,char * int>) coord horisontal up  : ((coord * (char * int )) list * (char * int ) list)=
+    let rec traverseUntillNullAccumulateMove acc (map:Map<coord,char * int>) coord horisontal up  : (coord * (char * int )) list=
         let result = map.TryFind coord
         if (result).IsSome 
         then 
+            let index = (coord,result.Value)
             let coord = changeCoordAccordingToHorisontalAndUp coord horisontal up
-            traverseUntillNullAccumulateMove (((coord,result.Value):: fst acc, (result.Value :: snd acc))) map coord horisontal up
-        else (List.rev (fst acc),snd acc)
+            traverseUntillNullAccumulateMove (index :: acc) map coord horisontal up
+        else (List.rev acc)
 
-    let getPerpendicularMove  map x horisontal up : (((coord * (char * int)) list) * (char * int ) list) =
+    let getPerpendicularMove  map x horisontal up : ((coord * (char * int)) list) =
         //get letters to the right/below of center
         let coord = changeCoordAccordingToHorisontalAndUp  x (not horisontal) (1 * up)
-        let right = traverseUntillNullAccumulateMove ([],[]) map coord (not horisontal) (1 * up)
+        let right = traverseUntillNullAccumulateMove ([]) map coord (not horisontal) (1 * up)
         //get letters from center to left/above 
-        let left = (traverseUntillNullAccumulateMove ([],[]) map  x (not horisontal) (-1 * up))
-        let resultingword = ((fst left |> List.rev) @ (fst right), (snd left |> List.rev) @ (snd right)) 
+        let left = (traverseUntillNullAccumulateMove ([]) map  x (not horisontal) (-1 * up))
+        let resultingword = (left |> List.rev) @ (right) 
         (resultingword) 
 
-    let rec traverseUntillLastLetterAndAccumulateOrtogonalMoves acc (map:Map<coord,char * int>) (move:(coord * (char * int)) list) (horisontal:bool) up : ((((coord * (char * int)) list) * (char * int ) list)) list =
+    let rec traverseUntillLastLetterAndAccumulateOrtogonalMoves acc (map:Map<coord,char * int>) (move:(coord * (char * int)) list) (horisontal:bool) up : ((coord * (char * int)) list) list =
         match move with
         |x::y::xs -> 
+            let x = x
             let map = (addMoveToMap x map)
             let resultingWord = getPerpendicularMove map (fst x) horisontal up
             let acc = resultingWord :: acc
@@ -44,7 +49,6 @@
         |_ -> acc
 
 
-
     //A function that traverses the given map horisontally or vertically positively or negatively depending on arguments
     let rec traverseUntillNull acc (map:Map<coord,char * int>) coord horisontal up =
         let result = map.TryFind coord
@@ -54,7 +58,7 @@
             traverseUntillNull (result.Value :: acc) map coord horisontal up
         else List.rev acc
 
-    let getPerpendicularWord map x horisontal up :string =
+    let getPerpendicularWord map x horisontal up : string =
         //get letters to the right/below of center
         let coord = changeCoordAccordingToHorisontalAndUp  x (not horisontal) (1 * up)
         let right = traverseUntillNull [] map coord (not horisontal) (1 * up)
@@ -108,11 +112,34 @@
         fst
     let convertToValidationMove move : (coord * (char * int)) list=
          List.map (fun x -> (fst x , snd(snd x))) move
-    //            let move = List.map (fun x -> (fst x,fst (snd (snd x)))) move
+
+    let isConnectedToOtherWords (originalMove:(coord * (char * int)) list) (board:board) horisontal up : bool =
+        let originalMap = board.boardMap
+        let rec aux (acc:bool) map (move:(coord * (char * int)) list) =
+            match move with 
+            |x::y::xs ->
+                let x = x
+                let map = (addMoveToMap x map)
+                let perpendicularWord = (getPerpendicularWord map (fst x) horisontal up)
+                if perpendicularWord.Length <> 1
+                then true
+                else
+                    aux acc map (y::xs)
+            |x::xs ->
+                let map = (addMoveToMap x map)
+                let resultingWord = (getPerpendicularWord map (fst x) (not horisontal) up)
+                if resultingWord.Length <> originalMove.Length
+                then true 
+                else acc
+            |_ -> acc
+        aux false originalMap originalMove 
+
     let isValidPlay (move:(coord * (char * int)) list) (board:board) dict horisontal up: bool =
         //check if coords are not in holes
         let map = board.boardMap
         let boardFun = board.boardFun
+        let isStartingMove = map.Count = 0
+        let isMoveOverCenter = (if isStartingMove then (isMoveOverCenter board.center move) else true)
         let includesHoles = 
             List.fold (
                 fun acc x -> 
@@ -138,6 +165,7 @@
                             then true 
                             else false
             ) false move
+
         //establish direction
         if move.Length = 1
         then 
@@ -148,12 +176,18 @@
         else
             //check if continuos
             let isContinous = isContinuosMove move horisontal
-            if (not includesHoles) && (not overlapsWithExistingTiles) && isContinous 
+            if (not includesHoles) && (not overlapsWithExistingTiles) && isContinous
             then 
-            //check for changed words by move
-            //if hori then only check horisontally on the last tile and vice versa
-            //for each tile check the ortogonal directions of the placement direction and verify that it creates valid words
-                traverseUntillLastLetterAndVerifyOrtogonalWords true board.boardMap move dict horisontal up
+                if isStartingMove 
+                then 
+                    if isMoveOverCenter
+                    then traverseUntillLastLetterAndVerifyOrtogonalWords true board.boardMap move dict horisontal up
+                    else false
+                else 
+                    //check for changed words by move
+                    //if hori then only check horisontally on the last tile and vice versa
+                    //for each tile check the ortogonal directions of the placement direction and verify that it creates valid words
+                    traverseUntillLastLetterAndVerifyOrtogonalWords true board.boardMap move dict horisontal up
             else 
                 false
     

@@ -111,3 +111,5 @@ D:\code\Fsharp\ScrabblebotProject\ThiccTesting\obj\Debug\netcoreapp3.0\ThiccTest
 D:\code\Fsharp\ScrabblebotProject\ThiccTesting\obj\Debug\netcoreapp3.0\ThiccTesting.pdb
 D:\code\Fsharp\ScrabblebotProject\ThiccTesting\bin\Debug\netcoreapp3.0\FParsec.dll
 D:\code\Fsharp\ScrabblebotProject\ThiccTesting\bin\Debug\netcoreapp3.0\FParsecCS.dll
+D:\code\Fsharp\ScrabblebotProject\ThiccTesting\obj\Debug\netcoreapp3.0\ThiccTesting.genruntimeconfig.cache
+D:\code\Fsharp\ScrabblebotProject\ThiccTesting\bin\Debug\netcoreapp3.0\FSharp.Collections.ParallelSeq.dll

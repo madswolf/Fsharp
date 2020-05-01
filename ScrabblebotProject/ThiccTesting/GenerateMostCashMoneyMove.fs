@@ -108,9 +108,8 @@ let center = (StandardBoard.standardBoard ()).center
 
 //change handsize if you want accurate best move
 let stateWithoutBoardMapOrhand hand boardMap=
-    mkState tileMap 0u 0u dict reverseDict hand (mkBoard boardFun 0 squares center boardMap) 0 "" []
+    mkState tileMap 0u 0u dict reverseDict hand (mkBoard boardFun 0 squares center boardMap) 5 "" []
     
-
 
 [<Fact>]
 let generateAWordFromState_given_board_with_hel_and_hand_LOL__finds_move_LO () =
@@ -124,4 +123,40 @@ let generateAWordFromState_given_board_with_hel_and_hand_LOL__finds_move_LO () =
     let expected = []
     List.mapi (fun index item -> Assert.Equal(item,actual.[index])) expected
 
+[<Fact>]
+let generateMostCashMoneyMove_given_empty_board_with_hand_hello_plays_bingo () =
+    let hand =
+        [8u;5u;12u;12u;15u] |> 
+        List.fold (fun multiset item -> MultiSet.addSingle item multiset) MultiSet.empty
+    let state = stateWithoutBoardMapOrhand hand Map.empty
+    let actual = generateMostCashMoneyMove state
+    let expected = []
+    List.mapi (fun index item -> Assert.Equal(item,actual.[index])) expected
+
+[<Fact>]
+let generateMostCashMoneyMove_given_board_AA_with_hand_AA_plays_AA () =
+    let things = [(('A',0),(0,0));(('A',0),(1,0))]
+    let map = List.fold(fun acc item -> Map.add (snd item) (fst item) acc) Map.empty things
+    let hand =
+        [1u;1u] |> 
+        List.fold (fun multiset item -> MultiSet.addSingle item multiset) MultiSet.empty
+    let state = stateWithoutBoardMapOrhand hand map
+    let actual = generateMostCashMoneyMove state
+    let expected = [((-1,-1),(1u,('A',0)));((0,-1),(1u,('A',0)))]
+    List.mapi (fun index item -> Assert.Equal(item,actual.[index])) expected
+
+[<Fact>]
+let generateMostCashMoneyMove_realGame1 () =
+    let things = 
+        [
+      
+        ]
+    let map = List.fold(fun acc item -> Map.add (snd item) (fst item) acc) Map.empty things
+    let hand =
+        [1u;1u;1u;4u;7u;7u;18u] |> 
+        List.fold (fun multiset item -> MultiSet.addSingle item multiset) MultiSet.empty
+    let state = stateWithoutBoardMapOrhand hand map
+    let actual = generateMostCashMoneyMove state
+    let expected = [((-1,-1),(1u,('A',0)));((0,-1),(1u,('A',0)))]
+    List.mapi (fun index item -> Assert.Equal(item,actual.[index])) expected
 

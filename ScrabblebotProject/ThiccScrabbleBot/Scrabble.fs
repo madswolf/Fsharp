@@ -7,31 +7,18 @@ open GenerationEngine
 open System.IO
 open DebugPrint
 
-module RegEx =
-    open System.Text.RegularExpressions
-
-    let (|Regex|_|) pattern input =
-        let m = Regex.Match(input, pattern)
-        if m.Success then Some(List.tail [ for g in m.Groups -> g.Value ])
-        else None
-
-    let parseMove ts =
-        let pattern = @"([-]?[0-9]+[ ])([-]?[0-9]+[ ])([0-9]+)([A-Z]{1})([0-9]+)[ ]?" 
-        Regex.Matches(ts, pattern) |>
-        Seq.cast<Match> |> 
-        Seq.map 
-            (fun t -> 
-                match t.Value with
-                | Regex pattern [x; y; id; c; p] ->
-                    ((x |> int, y |> int), (id |> uint32, (c |> char, p |> int)))
-                | _ -> failwith "Failed (should never happen)") |>
-        Seq.toList
-
  module Print =
+    
+    let boardMapToString map =
+        Map.fold (fun acc coord tile -> acc + sprintf "(%A, %A); \n" tile coord ) "" map
+    
+    let handToString pieces hand =
+           hand |>
+           MultiSet.fold (fun acc x i -> acc + sprintf " %d -> (%A, %d)\n" x (Map.find x pieces) i) ""
 
     let printHand pieces hand =
         hand |>
-        MultiSet.fold (fun acc x i -> acc + sprintf " %d -> (%A, %d)\n" x (Map.find x pieces) i) ""
+        MultiSet.fold (fun _ x i -> forcePrint (sprintf "%d -> (%A, %d)\n" x (Map.find x pieces) i)) ()
 
 module Scrabble =
     open System.Threading
@@ -39,6 +26,7 @@ module Scrabble =
     
     let filepath string =
         @"D:\code\Fsharp\ScrabblebotProject\ThiccTesting\Testfiles\" + string + @".txt"
+
 
     let playGame cstream (st:state)=
         
@@ -51,7 +39,7 @@ module Scrabble =
                 if st.movesUntillTurn = 0u
                 then
                     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
-                    let move = generateMostCashMoneyMove st
+                    let move = generateMostCashMoneyMoveParallel st
                     stopWatch.Stop()
                     let st' = mkState st.tiles (st.numberOfPlayers - 1u ) st.numberOfPlayers st.dictionary st.reverseDictionary st.hand st.board st.handSize st.errors (stopWatch.Elapsed::st.performance) 
                     let moveString = moveToString move
@@ -74,7 +62,7 @@ module Scrabble =
                 //remove the played pieces from the hand and add new pieces to it
                 //update internal board state with move
 
-                let hand = updateHand st.hand ms newPieces
+                let hand = updateHand st.hand ms newPieces 
 
                 let board = updateBoard st.board ms
 
@@ -91,7 +79,8 @@ module Scrabble =
                 let st' = mkState st.tiles (st.movesUntillTurn - 1u) st.numberOfPlayers st.dictionary st.reverseDictionary st.hand board st.handSize st.errors st.performance
                 aux st'
             | RCM (CMPlayFailed (pid, ms)) ->
-                aux (passedOrEquvalent st)
+                debugPrint (sprintf "\n failing move: %A" ms)
+                aux (mkState st.tiles (st.movesUntillTurn - 1u) st.numberOfPlayers st.dictionary st.reverseDictionary st.hand st.board st.handSize (sprintf "%A \n Failing move: %A \n Hand: \n Board: %A \n%A" st.errors ms (Print.handToString st.tiles (hand st)) (Print.boardMapToString st.board.boardMap)) st.performance)
             |RCM (CMPassed pid) -> 
                 aux (passedOrEquvalent st)
             |RCM (CMChange (pid, numTiles)) -> 
@@ -105,7 +94,7 @@ module Scrabble =
                 //reduce number of players
                 let st' = mkState st.tiles (st.movesUntillTurn - 1u) (st.numberOfPlayers-1u) st.dictionary st.reverseDictionary st.hand st.board st.handSize st.errors  st.performance
                 aux st'
-            | RGPE err -> aux (mkState st.tiles st.movesUntillTurn st.numberOfPlayers st.dictionary st.reverseDictionary st.hand st.board st.handSize (sprintf "%A \n Gameplay Error: %A \n Hand: \N %A" st.errors err (Print.printHand st.tiles (hand st)))  st.performance)
+            | RGPE err -> aux (mkState st.tiles st.movesUntillTurn st.numberOfPlayers st.dictionary st.reverseDictionary st.hand st.board st.handSize (sprintf "%A \n Gameplay Error: %A \n Hand: \n Board: %A \n%A" st.errors err (Print.handToString st.tiles (hand st)) (Print.boardMapToString st.board.boardMap)) st.performance)
         aux st
 
          

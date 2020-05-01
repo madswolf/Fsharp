@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="IsConnectedToBoard.fs" />
+    <Compile Include="CalculatePointsForMove.fs" />
     <Compile Include="GenerateMostCashMoneyMove.fs" />
     <Compile Include="File1.fs" />
     <Compile Include="UpdateBoard.fs" />

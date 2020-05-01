@@ -1,1 +1,1 @@
-466 average time for move
+143 average time for move

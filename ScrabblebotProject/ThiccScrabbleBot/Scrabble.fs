@@ -88,7 +88,7 @@ module Scrabble =
             |RCM (CMTimeout pid) ->
                 aux (passedOrEquvalent st)
             | RCM (CMGameOver _) -> 
-                File.WriteAllText((filepath "errors"),st.errors + sprintf "%A average time for move" ((st.performance |> List.map (fun x -> x.Milliseconds) |> List.sum)/st.performance.Length))
+                //File.WriteAllText((filepath "errors"),st.errors + sprintf "%A average time for move" ((st.performance |> List.map (fun x -> x.Milliseconds) |> List.sum)/st.performance.Length))
                 () // end the misery
             | RCM (CMForfeit pid) -> 
                 //reduce number of players

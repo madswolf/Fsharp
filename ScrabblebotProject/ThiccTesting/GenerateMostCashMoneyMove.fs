@@ -61,7 +61,7 @@ let wildcard =
     ] |>
     List.fold (fun acc item -> Set.add item acc) Set.empty) 
 
-let tileMap : Map<uint32,tile>=
+let tileMap : Map<uint32,tile> =
     [
     (1u,('A',1));
     (2u,('B',3));
@@ -119,7 +119,7 @@ let generateAWordFromState_given_board_with_hel_and_hand_LOL__finds_move_LO () =
         [12u;15u] |> 
         List.fold (fun multiset item -> MultiSet.addSingle item multiset) MultiSet.empty
     let state = stateWithoutBoardMapOrhand hand map
-    let actual = generateMostCashMoneyMove state
+    let actual = generateMostCashMoneyMoveParallel state
     let expected = []
     List.mapi (fun index item -> Assert.Equal(item,actual.[index])) expected
 
@@ -129,7 +129,7 @@ let generateMostCashMoneyMove_given_empty_board_with_hand_hello_plays_bingo () =
         [8u;5u;12u;12u;15u] |> 
         List.fold (fun multiset item -> MultiSet.addSingle item multiset) MultiSet.empty
     let state = stateWithoutBoardMapOrhand hand Map.empty
-    let actual = generateMostCashMoneyMove state
+    let actual = generateMostCashMoneyMoveParallel state
     let expected = []
     List.mapi (fun index item -> Assert.Equal(item,actual.[index])) expected
 
@@ -141,22 +141,9 @@ let generateMostCashMoneyMove_given_board_AA_with_hand_AA_plays_AA () =
         [1u;1u] |> 
         List.fold (fun multiset item -> MultiSet.addSingle item multiset) MultiSet.empty
     let state = stateWithoutBoardMapOrhand hand map
-    let actual = generateMostCashMoneyMove state
+    let actual = generateMostCashMoneyMoveParallel state
     let expected = [((-1,-1),(1u,('A',0)));((0,-1),(1u,('A',0)))]
+    //race conditions means this won't always be the same
     List.mapi (fun index item -> Assert.Equal(item,actual.[index])) expected
 
-[<Fact>]
-let generateMostCashMoneyMove_realGame1 () =
-    let things = 
-        [
-      
-        ]
-    let map = List.fold(fun acc item -> Map.add (snd item) (fst item) acc) Map.empty things
-    let hand =
-        [1u;1u;1u;4u;7u;7u;18u] |> 
-        List.fold (fun multiset item -> MultiSet.addSingle item multiset) MultiSet.empty
-    let state = stateWithoutBoardMapOrhand hand map
-    let actual = generateMostCashMoneyMove state
-    let expected = [((-1,-1),(1u,('A',0)));((0,-1),(1u,('A',0)))]
-    List.mapi (fun index item -> Assert.Equal(item,actual.[index])) expected
 

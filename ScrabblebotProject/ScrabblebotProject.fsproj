@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,8 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="BeeboTheGodOfWar">
-      <HintPath>BeeboTheGodOfWar.dll</HintPath>
+    <Reference Include="BeeboTheBlueGod">
+      <HintPath>BeeboTheBlueGod.dll</HintPath>
+    </Reference>
+    <Reference Include="fortran">
+      <HintPath>fortran.dll</HintPath>
     </Reference>
     <Reference Include="Oxyphenbutazone">
       <HintPath>..\ScrabbleProject2020\Main project\Oxyphenbutazone.dll</HintPath>

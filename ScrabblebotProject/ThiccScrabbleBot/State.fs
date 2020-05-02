@@ -2,27 +2,9 @@
     open Eval
     open Dictionary
     open ScrabbleUtil
+    open Ass7.ImpParser
     
-    // Make sure to keep your state localised in this module. It makes your life a whole lot easier.
-    // Currently, it only keeps track of your hand, and your player number but it could, potentially, 
-    // keep track of other useful
-    // information, such as number of players, player turn, etc.
     type move = (coord * (uint32 * (char * int))) list
-
-    let moveToString (move:move) : string=
-        let slotToString (move:coord * (uint32 * (char * int))) =
-            let coord = fst move
-            let x = fst coord
-            let y = snd coord
-            let tile = snd move
-            let tileID = fst tile
-            let tileValue = snd tile
-            let char = fst tileValue
-            let points = snd tileValue
-            "("+ string x + " " + string y + " " + string tileID + " " + string char + " " + string points+")"
-        List.fold(fun acc thing -> acc + " " + slotToString thing) "" move
-
-
     type board = {
         boardFun      : boardFun
         boardMap      : Map<coord,(char * int)>
@@ -51,13 +33,46 @@
     }
 
     let mkState tiles moves playerNum dict revDict h board handsize errors performance= {tiles = tiles; movesUntillTurn = moves; numberOfPlayers = playerNum; dictionary = dict; reverseDictionary = revDict; hand = h; board = board; handSize = handsize; errors = errors; performance = performance}
-
-    let newState pn hand = mkState pn hand
-
+    
     let updateHand hand (ms:move) newPieces =
         List.map (fun x -> snd x  |> fst) ms |>
         List.fold (fun acc item -> MultiSet.removeSingle item acc) hand |>
         MultiSet.sum (List.fold (fun acc (x, k) -> MultiSet.add x k acc) MultiSet.empty newPieces) 
 
-    let playerNumber st  = st.movesUntillTurn
-    let hand st          = st.hand
+    let boardMapToString map =
+        Map.fold (fun acc coord tile -> acc + sprintf "(%A, %A); \n" tile coord ) "" map
+    
+    let handToString (pieces:Map<uint32,tile>) hand =
+           hand |>
+           MultiSet.fold (fun acc x i -> acc + sprintf " %d -> (%A, %d)\n" x (Map.find x pieces) i) ""
+
+    let boardProgToBoardFun boardProg usedSquare  : boardFun= 
+        let stm = runTextParser stmParse boardProg  
+        stmntToBoardFun stm usedSquare 
+    
+    let squaresOfProgToSquaresOfFun squares =
+     Map.map (
+         fun id map ->
+             Map.map (
+                 fun key value -> 
+                     runTextParser stmParse value |>
+                     stmntToSquareFun
+             ) map
+     ) squares
+
+    let squaresOfProgToSquaresOfFunList (squares:Map<int,squareProg>) : Map<int,square> =
+        Map.map (
+            fun id map ->
+                Map.fold (
+                    fun acc key value -> 
+                        ((key), (runTextParser stmParse value |> stmntToSquareFun)) :: acc
+                ) [] map
+        ) squares
+
+    let boardToStateBoard (boardP:ScrabbleUtil.boardProg) map = 
+        let squaresList = boardP.squares |> squaresOfProgToSquaresOfFunList 
+        let boardFun = boardProgToBoardFun boardP.prog boardP.usedSquare
+        mkBoard boardFun boardP.usedSquare squaresList boardP.center map
+
+    let boardToStateBoardWithMap (boardP:ScrabbleUtil.boardProg)= 
+        boardToStateBoard boardP Map.empty

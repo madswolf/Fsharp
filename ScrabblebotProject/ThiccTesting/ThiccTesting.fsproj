@@ -1,21 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="IsConnectedToBoard.fs" />
     <Compile Include="CalculatePointsForMove.fs" />
     <Compile Include="GenerateMostCashMoneyMove.fs" />
     <Compile Include="File1.fs" />
     <Compile Include="UpdateBoard.fs" />
     <Compile Include="UpdateHand.fs" />
     <Compile Include="FindAllPrefixes.fs" />
-    <Compile Include="GenerationEngine.fs" />
     <Compile Include="isValidPlay.fs" />
     <Compile Include="IsContinuos.fs" />
     <Compile Include="PerpendicularWord.fs" />

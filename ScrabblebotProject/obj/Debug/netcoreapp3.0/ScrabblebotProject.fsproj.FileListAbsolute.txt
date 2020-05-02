@@ -33,6 +33,7 @@ D:\code\Fsharp\ScrabblebotProject\bin\Debug\netcoreapp3.0\FSharp.Quotations.Eval
 D:\code\Fsharp\ScrabblebotProject\bin\Debug\netcoreapp3.0\FsPickler.dll
 D:\code\Fsharp\ScrabblebotProject\bin\Debug\netcoreapp3.0\ThiccScrabbleBot.dll
 D:\code\Fsharp\ScrabblebotProject\bin\Debug\netcoreapp3.0\ThiccScrabbleBot.pdb
-D:\code\Fsharp\ScrabblebotProject\bin\Debug\netcoreapp3.0\BeeboTheGodOfWar.dll
 D:\code\Fsharp\ScrabblebotProject\obj\Debug\netcoreapp3.0\ScrabblebotProject.genruntimeconfig.cache
 D:\code\Fsharp\ScrabblebotProject\bin\Debug\netcoreapp3.0\FSharp.Collections.ParallelSeq.dll
+D:\code\Fsharp\ScrabblebotProject\bin\Debug\netcoreapp3.0\BeeboTheBlueGod.dll
+D:\code\Fsharp\ScrabblebotProject\bin\Debug\netcoreapp3.0\fortran.dll

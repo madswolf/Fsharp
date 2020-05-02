@@ -270,29 +270,4 @@
                 |Success v -> v
                 |_ -> failwith "uwu"
 
-            
-    (*let stmntToBoardFunAlt stm (squares:Map<int,Map<int,squareFun>>) : boardFun =
-        fun (x,y)->
-            let state = mkState [("_x_", x);("_y_", y);("_result_",0)] [] ["_x_";"_y_";"_result_"]
-            prog{
-                do! stmntEval2 stm
-                let! id = lookup "_result_"
-                return squares.TryFind id
-            } |> evalSM state |>
-            function 
-            |Success v -> v
-            |_ -> failwith "uwu"*)
-
-    (*type board = {
-        center        : coord
-        defaultSquare : squareFun
-        squares       : boardFun
-    }
-
-    //didn't bother fixing after changing boardFun
-    let mkBoard center defaultSq boardStmnt ids : board = 
-        let map = List.fold(fun acc item -> Map.add (fst item) (stmntToSquareFun (snd item)) acc) Map.empty ids
-        let defaultSquare = stmntToSquareFun defaultSq 
-        let squares = stmntToBoardFun boardStmnt map
-        {center= center; defaultSquare= defaultSquare; squares= squares}*)
     

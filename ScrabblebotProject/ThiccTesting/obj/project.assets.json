@@ -1,7 +1,7 @@
 {
   "version": 3,
   "targets": {
-    ".NETCoreApp,Version=v3.0": {
+    ".NETCoreApp,Version=v3.1": {
       "coverlet.collector/1.0.1": {
         "type": "package",
         "build": {
@@ -2041,7 +2041,7 @@
       },
       "ThiccScrabbleBot/1.0.0": {
         "type": "project",
-        "framework": ".NETCoreApp,Version=v3.0",
+        "framework": ".NETCoreApp,Version=v3.1",
         "dependencies": {
           "FParsec": "1.1.1",
           "FSharp.Collections.ParallelSeq": "1.1.3",
@@ -6750,7 +6750,7 @@
     }
   },
   "projectFileDependencyGroups": {
-    ".NETCoreApp,Version=v3.0": [
+    ".NETCoreApp,Version=v3.1": [
       "FSharp.Core >= 4.7.0",
       "Microsoft.NET.Test.Sdk >= 16.2.0",
       "ThiccScrabbleBot >= 1.0.0",
@@ -6776,14 +6776,14 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "netcoreapp3.0"
+        "netcoreapp3.1"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "netcoreapp3.0": {
+        "netcoreapp3.1": {
           "projectReferences": {
             "D:\\code\\Fsharp\\ScrabblebotProject\\ThiccScrabbleBot\\ThiccScrabbleBot.fsproj": {
               "projectPath": "D:\\code\\Fsharp\\ScrabblebotProject\\ThiccScrabbleBot\\ThiccScrabbleBot.fsproj"
@@ -6793,7 +6793,7 @@
       }
     },
     "frameworks": {
-      "netcoreapp3.0": {
+      "netcoreapp3.1": {
         "dependencies": {
           "FSharp.Core": {
             "target": "Package",
@@ -6826,12 +6826,6 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[3.0.1, 3.0.1]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"

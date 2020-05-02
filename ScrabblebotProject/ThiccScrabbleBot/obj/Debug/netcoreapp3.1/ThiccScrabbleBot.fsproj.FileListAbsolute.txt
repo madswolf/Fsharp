@@ -1,0 +1,11 @@
+D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\bin\Debug\netcoreapp3.1\ThiccScrabbleBot.deps.json
+D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\bin\Debug\netcoreapp3.1\ThiccScrabbleBot.dll
+D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\bin\Debug\netcoreapp3.1\ThiccScrabbleBot.pdb
+D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\bin\Debug\netcoreapp3.1\ScrabbleServer.dll
+D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\bin\Debug\netcoreapp3.1\ScrabbleUtil.dll
+D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\obj\Debug\netcoreapp3.1\ThiccScrabbleBot.AssemblyInfoInputs.cache
+D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\obj\Debug\netcoreapp3.1\ThiccScrabbleBot.AssemblyInfo.fs
+D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\obj\Debug\netcoreapp3.1\ThiccScrabbleBot.fsproj.CopyComplete
+D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\obj\Debug\netcoreapp3.1\ThiccScrabbleBot.dll
+D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\obj\Debug\netcoreapp3.1\ThiccScrabbleBot.pdb
+D:\code\Fsharp\ScrabblebotProject\ThiccScrabbleBot\obj\Debug\netcoreapp3.1\ThiccScrabbleBot.fsprojAssemblyReference.cache

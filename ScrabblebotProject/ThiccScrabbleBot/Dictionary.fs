@@ -43,7 +43,6 @@ let isContinuableDict dict =
     then true
     else false
 
-
 let tryFind char dict =
     let (Dictionary(map,isWord)) = dict
     map.TryFind char

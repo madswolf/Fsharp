@@ -5,6 +5,7 @@ open Xunit
 open ValidityEngine
 open System.IO
 open Dictionary
+open State
 
 let readLines (filePath:string) = seq {
     use sr = new StreamReader (filePath)

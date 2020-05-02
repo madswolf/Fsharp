@@ -13,7 +13,8 @@
           "FSharp.Core": "4.7.1",
           "FSharp.Quotations.Evaluator": "2.1.0",
           "FsPickler": "5.3.1",
-          "BeeboTheGodOfWar": "1.0.0.0",
+          "BeeboTheBlueGod": "1.0.0.0",
+          "fortran": "1.0.0.0",
           "Oxyphenbutazone": "1.0.0.0",
           "ScrabbleServer": "1.0.0.0",
           "ScrabbleUtil": "1.0.0.0",
@@ -183,9 +184,17 @@
           "System.Runtime": "4.3.0"
         }
       },
-      "BeeboTheGodOfWar/1.0.0.0": {
+      "BeeboTheBlueGod/1.0.0.0": {
         "runtime": {
-          "BeeboTheGodOfWar.dll": {
+          "BeeboTheBlueGod.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "fortran/1.0.0.0": {
+        "runtime": {
+          "fortran.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -336,7 +345,12 @@
       "path": "system.threading.tasks/4.3.0",
       "hashPath": "system.threading.tasks.4.3.0.nupkg.sha512"
     },
-    "BeeboTheGodOfWar/1.0.0.0": {
+    "BeeboTheBlueGod/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "fortran/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
